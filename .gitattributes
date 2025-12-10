@@ -1,2 +1,57 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# ======================
+#   LINE ENDINGS (LF)
+# ======================
+* text=auto eol=lf
+
+# ======================
+#   BINARY FILES
+# ======================
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+
+# ======================
+#   PYTHON
+# ======================
+*.py text
+*.pyi text
+
+# ======================
+#   JAVASCRIPT / TYPESCRIPT
+# ======================
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.json text
+
+# ======================
+#   REACT BUILD FILES
+# ======================
+frontend/build/* binary
+frontend/dist/* binary
+
+# ======================
+#   MARKDOWN / CONFIG
+# ======================
+*.md text
+*.yml text
+*.yaml text
+*.toml text
+*.ini text
+*.env text
+*.txt text
+
+# ======================
+#   GITHUB LINGUIST (опционально)
+# ======================
+# Не считать build-код JavaScript-ом
+frontend/build/* linguist-vendored
+frontend/dist/* linguist-vendored
