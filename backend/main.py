@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from routers.auth_route import auth_router
+from routers import auth_route, curator_route
 from databases.postgres import database
 from fastapi import FastAPI
 import subprocess
@@ -12,7 +12,8 @@ async def lifespan(app: FastAPI):
     await database.disconnect()
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(auth_router)
+app.include_router(auth_route.auth_router)
+app.include_router(curator_route.cur_router)
 
 if __name__ == "__main__":
     subprocess.run([

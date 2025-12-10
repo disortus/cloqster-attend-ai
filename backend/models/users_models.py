@@ -1,16 +1,14 @@
-from auth.security import hash_password, verify_password
 from schemas.users_sch import UserReg, Token, UserLogin, UserOut
-from fastapi.security import OAuth2PasswordBearer
+from auth.security import hash_password, verify_password
 from fastapi import HTTPException, Depends, status
+from fastapi.security import OAuth2PasswordBearer
+from databases.postgres import database
 from pydantic import ValidationError
 from auth.utils import create_token
 from datetime import datetime
-from databases.postgres import database
-import jwt
 from jwt import PyJWTError
 from typing import List
-
-
+import jwt
 
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login",scheme_name="JWT")
 
@@ -56,7 +54,7 @@ async def reg_user(data: UserReg):
 
 async def get_current_user(token: str = Depends(reuseable_oauth)) -> UserOut:
     try:
-        payload = jwt.decode(token, "MY_SECRET", algorithms=["HS256"])
+        payload = jwt.decode(token, "your-secret-key", algorithms=["HS256"])
         user_id: int = payload.get("user_id")
 
         if datetime.fromtimestamp(user_id.exp) < datetime.now():
