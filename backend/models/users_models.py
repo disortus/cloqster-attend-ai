@@ -15,8 +15,8 @@ reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login",scheme_name="JWT")
 async def login_user(data: UserLogin):
     async with database.pool.acquire() as conn:
         user = await conn.fetchrow("""
-            SELECT * FROM Users WHERE login = $1
-        """, data.login)
+            SELECT * FROM Users WHERE email = $1
+        """, data.email)
 
         if not user:
             raise HTTPException(400, "Неверный логин или пароль")

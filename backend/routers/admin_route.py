@@ -1,4 +1,5 @@
 from schemas.groups_sch import Spec, Group
+from schemas.users_sch import UserReg, UserOut
 from fastapi import APIRouter, Depends
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
@@ -23,7 +24,7 @@ async def fetch_groups():
     from models.admin_models import get_groups
     return await get_groups()
 
-@admin_router.post("/register")
-async def register_user(data: 'UserReg'):
+@admin_router.post("/register", response_model=UserOut)
+async def register_user(data: UserReg):
     from models.admin_models import reg_user
     return await reg_user(data)

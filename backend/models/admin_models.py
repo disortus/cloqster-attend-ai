@@ -1,4 +1,4 @@
-from auth.security import hash_password, verify_password
+from auth.security import hash_password
 from schemas.users_sch import UserReg, UserOut
 from schemas.groups_sch import Spec, Group
 from schemas.students_sch import Student
@@ -58,9 +58,9 @@ async def reg_user(data: UserReg) -> UserOut:
     async with database.pool.acquire() as conn:
         try:
             user = await conn.fetchrow("""
-                INSERT INTO Users (login, password, fullname, role)
+                INSERT INTO Users (email, password, fullname, role)
                 VALUES ($1, $2, $3, $4)
-                RETURNING login, fullname, role
+                RETURNING email, fullname, role
             """,
             data.email,
             hash_password(data.password),
