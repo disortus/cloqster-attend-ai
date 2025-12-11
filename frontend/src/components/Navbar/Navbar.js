@@ -20,7 +20,7 @@ function Navbar() {
         </ul>
         <ul>
             <li>
-                {/*<Dropdown />*/}
+                <Dropdown />
             </li>
             <li>
                 <Link to="/login" className="login">Кіру</Link>

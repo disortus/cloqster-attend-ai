@@ -28,11 +28,13 @@
 }
 
 .top{
-    color: black
+    color: black;
+    text-align: center;
 }
 
 .login{
-    color: #065FCB
+    color: #065FCB;
+    text-align: center;
 }
 
 .register{
