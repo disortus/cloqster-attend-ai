@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from routers import auth_route, curator_route
+from routers import auth_route, curator_route, admin_route
 from databases.postgres import database
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +21,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.include_router(auth_route.auth_router)
 app.include_router(curator_route.cur_router)
+app.include_router(admin_route.admin_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,6 +36,6 @@ if __name__ == "__main__":
         "uvicorn",
         "main:app",
         "--host", "localhost",
-        "--port", "3000",
+        "--port", "8000",
         "--reload"
     ])
