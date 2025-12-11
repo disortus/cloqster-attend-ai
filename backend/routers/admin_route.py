@@ -22,3 +22,8 @@ async def create_group(data: Group):
 async def fetch_groups():
     from models.admin_models import get_groups
     return await get_groups()
+
+@admin_router.post("/register")
+async def register_user(data: 'UserReg'):
+    from models.admin_models import reg_user
+    return await reg_user(data)

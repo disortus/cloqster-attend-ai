@@ -1,7 +1,9 @@
+from auth.security import hash_password, verify_password
+from schemas.users_sch import UserReg, UserOut
 from schemas.groups_sch import Spec, Group
 from schemas.students_sch import Student
-from schemas.users_sch import UserReg, UserOut
 from databases.postgres import database
+from fastapi import HTTPException
 
 
 async def add_spec(data: Spec) -> dict:
@@ -51,17 +53,22 @@ async def get_groups() -> list:
             "JOIN Qualify ON Groups.qua_id = Qualify.id "
         )
         return [dict(group) for group in groups]
-async def reg_n(data: UserReg) -> UserOut:
+
+async def reg_user(data: UserReg) -> UserOut:
     async with database.pool.acquire() as conn:
         try:
-            user = await conn.fetchrow(
-                "INSERT INTO Users (username, full_name, email, hashed_password) "
-                "VALUES ($1, $2, $3, $4) RETURNING id, username, full_name, email",
-                data.username,
-                data.full_name,
-                data.email,
-                data.hashed_password
-            )
-            return UserOut(**dict(user))
+            user = await conn.fetchrow("""
+                INSERT INTO Users (login, password, fullname, role)
+                VALUES ($1, $2, $3, $4)
+                RETURNING login, fullname, role
+            """,
+            data.email,
+            hash_password(data.password),
+            data.fullname,
+            data.role)
         except Exception as e:
             print(e)
+            raise HTTPException(400, "Такой логин уже существует")
+
+        return UserOut(**dict(user))
+
