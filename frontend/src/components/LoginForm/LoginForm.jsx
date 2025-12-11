@@ -1,47 +1,45 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import './LoginForm.css';
+import { Link, useNavigate } from "react-router-dom";
+import "./LoginForm.css";
 import { MdOutlineEmail, MdLockOutline } from "react-icons/md";
 
 const LoginForm = () => {
-    const [login, setEmail] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+        setLoading(true);
 
         try {
-            const resp = await fetch("http://localhost:8000/login", {
+            const res = await fetch("http://localhost:5000/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "accept": "application/json"
                 },
                 body: JSON.stringify({
-                    login,
-                    password
-                })
+                    email,
+                    password,
+                }),
             });
 
-            if (!resp.ok) {
-                const err = await resp.json();
-                setError(err.detail || "Қате деректер");
-                return;
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.message || "Кіру кезінде қате пайда болды");
             }
 
-            const data = await resp.json();
+            const data = await res.json();
             console.log("Успешный вход:", data);
 
-            // например: сохранить токен
-            localStorage.setItem("token", data.access_token);
-
-            // редирект на главную
-            window.location.href = "/dashboard";
-
+            navigate("/home");
         } catch (err) {
-            console.error("Ошибка:", err);
-            setError("Сервер қолжетімсіз", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -49,17 +47,17 @@ const LoginForm = () => {
         <div className="wrapper">
             <form onSubmit={handleSubmit}>
                 <h1>Қош келдіңіз!</h1>
-
                 <div className="login-form">
-                    <p>Login</p>
+                    <p>Email</p>
                     <div className="input-box">
                         <MdOutlineEmail className="icon" />
                         <input
-                            type="text"
+                            type="email"
                             placeholder="email@example.com"
-                            value={login}
-                            onChange={(e) => setEmail(e.target.value)}
+                            className="email"
                             required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
 
@@ -69,23 +67,31 @@ const LoginForm = () => {
                         <input
                             type="password"
                             placeholder="••••••••"
+                            required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            required
                         />
                     </div>
 
-                    {error && <div className="error">{error}</div>}
-
                     <div className="remember-forgot">
-                        <Link to="#">Құпия сөзді ұмыттыңыз ба?</Link>
+                        <Link to="#" className="">
+                            Құпия сөзді ұмыттыңыз ба?
+                        </Link>
                     </div>
 
-                    <button type="submit">Кіру</button>
-                </div>
+                    {error && <p className="error-text">{error}</p>}
 
+                    <button type="submit" disabled={loading}>
+                        {loading ? "Кіру..." : "Кіру"}
+                    </button>
+                </div>
                 <div className="register-link">
-                    <p>Аккаунт жоқ па? <Link to="/register" className="reg">Тіркелу</Link></p>
+                    <p>
+                        Аккаунт жок па?{" "}
+                        <Link to="/register" className="reg">
+                            Тіркелу
+                        </Link>
+                    </p>
                 </div>
             </form>
         </div>
