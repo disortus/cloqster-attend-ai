@@ -35,8 +35,8 @@
 # ======================
 #   REACT BUILD FILES
 # ======================
-frontend/build/* binary
-frontend/dist/* binary
+# frontend/build/* binary
+# frontend/dist/* binary
 
 # ======================
 #   MARKDOWN / CONFIG
