@@ -53,5 +53,5 @@ frontend/dist/* binary
 #   GITHUB LINGUIST (опционально)
 # ======================
 # Не считать build-код JavaScript-ом
-frontend/build/* linguist-vendored
-frontend/dist/* linguist-vendored
+# frontend/build/* linguist-vendored
+# frontend/dist/* linguist-vendored
