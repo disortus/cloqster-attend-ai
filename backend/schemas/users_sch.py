@@ -1,19 +1,20 @@
 from pydantic import BaseModel
+from pydantic import EmailStr
 
 class UserReg(BaseModel):
-    login: str
+    email: EmailStr
     password: str
     role: str 
     fullname: str
 
 class UserOut(BaseModel):
-    login: str
+    email: EmailStr
     fullname: str
     role: str
 
 
 class UserLogin(BaseModel):
-    login: str
+    email: EmailStr
     password: str    
 
 class Token(BaseModel):

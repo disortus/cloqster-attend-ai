@@ -15,8 +15,8 @@ reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login",scheme_name="JWT")
 async def login_user(data: UserLogin):
     async with database.pool.acquire() as conn:
         user = await conn.fetchrow("""
-            SELECT * FROM Users WHERE login = $1
-        """, data.login)
+            SELECT * FROM Users WHERE email = $1
+        """, data.email)
 
         if not user:
             raise HTTPException(400, "Неверный логин или пароль")
@@ -34,23 +34,7 @@ async def get_users() -> List[UserOut]:
         # users = [Users(login=record["login"], fullname=record["fullname"]) for record in rows]
         return rows # users
 
-async def reg_user(data: UserReg):
-    async with database.pool.acquire() as conn:
-        try:
-            user = await conn.fetchrow("""
-                INSERT INTO Users (login, password, fullname, role)
-                VALUES ($1, $2, $3, $4)
-                RETURNING login, fullname, role
-            """,
-            data.login,
-            hash_password(data.password),
-            data.fullname,
-            data.role)
-        except Exception as e:
-            print(e)
-            raise HTTPException(400, "Такой логин уже существует")
 
-        return UserOut(**dict(user))
 
 async def get_current_user(token: str = Depends(reuseable_oauth)) -> UserOut:
     try:

@@ -1,10 +1,10 @@
 from schemas.students_sch import Student
-from models.curators_models import add_face, add_std
+from models.curators_models import add_face, add_std, ch_std, del_std, get_std
 from fastapi import APIRouter, File, Form
 import json
 
 
-cur_router = APIRouter(prefix="/cur")
+cur_router = APIRouter(prefix="/cur", tags=["curator"])
 
 
 
@@ -17,3 +17,15 @@ async def add_faces(data: str = Form(...), img: bytes = File(...)):
     print(data)
     data = Student(**json.loads(data))
     return await add_face(data, img)
+
+@cur_router.get("get_std")
+async def get_stds():
+    return await get_std()
+
+@cur_router.delete("del_std")
+async def del_stds(data: Student):
+    return await del_std(data)
+
+@cur_router.put("ch_std")
+async def ch_stds(data: Student):
+    return await ch_std(data)

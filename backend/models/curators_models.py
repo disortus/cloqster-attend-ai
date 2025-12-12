@@ -27,3 +27,22 @@ async def add_std(data: Student) -> dict:
             return {"ok": True}
         except Exception as e:
             print(e)
+
+async def get_std() -> list:
+    async with database.pool.acquire() as conn:
+        stds = await conn.fetch("SELECT * FROM Students")
+        return [dict(std) for std in stds]
+    
+async def del_std(data: Student):
+    async with database.pool.acquire() as conn:
+        await conn.fetch("DELETE FROM Students WHERE fullname = $1", data.fullname)
+        return {"ok": True}
+
+async def ch_std(data: Student) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            await conn.fetchrow("UPDATE Students SET course = $1 WHERE fullname = $2", data.course, data.fullname)
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+

@@ -2,11 +2,9 @@ from schemas.users_sch import UserLogin, Token, UserReg, UserOut
 from fastapi import APIRouter, Depends
 from models import users_models
 
-auth_router = APIRouter()
+auth_router = APIRouter(tags=["auth"])
 
-@auth_router.post("/register", response_model=UserOut)
-async def reg_user(user: UserReg):
-    return await users_models.reg_user(user)
+
 
 @auth_router.post("/login", response_model=Token)
 async def login_user(data: UserLogin):
