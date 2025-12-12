@@ -70,5 +70,5 @@ async def reg_user(data: UserReg) -> UserOut:
             raise HTTPException(400, "Такой логин уже существует")
 
         return UserOut(**dict(user))
-
+    
 
