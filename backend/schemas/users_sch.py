@@ -6,6 +6,7 @@ class UserReg(BaseModel):
     password: str
     role: str 
     fullname: str
+    
 
 class UserOut(BaseModel):
     email: EmailStr
@@ -16,6 +17,10 @@ class UserOut(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str    
+
+class UserName(BaseModel):
+    fullname: str
+    
 
 class Token(BaseModel):
     access_token: str
