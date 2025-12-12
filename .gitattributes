@@ -35,8 +35,8 @@
 # ======================
 #   REACT BUILD FILES
 # ======================
-# frontend/build/* binary
-# frontend/dist/* binary
+frontend/build/* binary
+frontend/dist/* binary
 
 # ======================
 #   MARKDOWN / CONFIG
@@ -53,5 +53,5 @@
 #   GITHUB LINGUIST (опционально)
 # ======================
 # Не считать build-код JavaScript-ом
-# frontend/build/* linguist-vendored
-# frontend/dist/* linguist-vendored
+frontend/build/* linguist-vendored
+frontend/dist/* linguist-vendored
