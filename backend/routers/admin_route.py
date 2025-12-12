@@ -1,4 +1,4 @@
-from schemas.groups_sch import Spec, Group
+from schemas.groups_sch import Group
 from schemas.users_sch import UserReg, UserOut, UserName
 from fastapi import APIRouter, Depends
 from auth.utils import require_role
@@ -9,7 +9,7 @@ admin_router = APIRouter(
    # dependencies=[Depends(require_role("admin"))]
 )
 
-@admin_router.get("/")
+@admin_router.get("")
 async def admin_panel(user=Depends(require_role("admin"))):
     return {"msg": "admin access", "user": user}
 
