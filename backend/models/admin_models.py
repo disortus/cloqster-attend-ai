@@ -1,7 +1,6 @@
 from auth.security import hash_password
 from schemas.users_sch import UserReg, UserOut
 from schemas.groups_sch import Spec, Group
-from schemas.students_sch import Student
 from databases.postgres import database
 from fastapi import HTTPException
 
@@ -71,4 +70,5 @@ async def reg_user(data: UserReg) -> UserOut:
             raise HTTPException(400, "Такой логин уже существует")
 
         return UserOut(**dict(user))
+
 
