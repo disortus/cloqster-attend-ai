@@ -3,7 +3,7 @@ import "./RegisterForm";
 
 const RegisterForm = () => {
     return (
-        <div>dfgdfgdfgdf</div>
+        <div></div>
     );
 };
 

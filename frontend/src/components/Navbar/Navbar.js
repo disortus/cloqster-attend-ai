@@ -25,9 +25,6 @@ function Navbar() {
             <li>
                 <Link to="/login" className="login">Кіру</Link>
             </li>
-            <li>
-                <Link to="/register" className="register">Тіркелу</Link>
-            </li>
         </ul>
     </nav>
 }

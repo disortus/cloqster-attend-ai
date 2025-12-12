@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+    import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 import { MdOutlineEmail, MdLockOutline } from "react-icons/md";
@@ -73,25 +73,11 @@ const LoginForm = () => {
                         />
                     </div>
 
-                    <div className="remember-forgot">
-                        <Link to="#" className="">
-                            Құпия сөзді ұмыттыңыз ба?
-                        </Link>
-                    </div>
-
                     {error && <p className="error-text">{error}</p>}
 
                     <button type="submit" disabled={loading}>
                         {loading ? "Кіру..." : "Кіру"}
                     </button>
-                </div>
-                <div className="register-link">
-                    <p>
-                        Аккаунт жок па?{" "}
-                        <Link to="/register" className="reg">
-                            Тіркелу
-                        </Link>
-                    </p>
                 </div>
             </form>
         </div>
