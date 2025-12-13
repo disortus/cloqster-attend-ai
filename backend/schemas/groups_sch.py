@@ -7,3 +7,6 @@ class Spec(BaseModel):
 
 class Group(Spec):
      group_name: str
+
+class GroupDelete(BaseModel):
+     group_name: str

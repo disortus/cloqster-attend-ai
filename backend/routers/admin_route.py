@@ -1,4 +1,4 @@
-from schemas.groups_sch import Group
+from schemas.groups_sch import Group, GroupDelete
 from schemas.users_sch import UserReg, UserOut, UserName, StdGroup, UserDelete
 from fastapi import APIRouter, Depends
 from auth.utils import require_role
@@ -69,7 +69,7 @@ async def get_std_in_groups():
     return await get_std_in_group()
 
 @admin_router.delete("/delete_group", response_model=dict)
-async def delete_group(data: Group):
+async def delete_group(data: GroupDelete):
     from models.admin_models import del_qroup
     return await del_qroup(data)
 

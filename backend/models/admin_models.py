@@ -1,6 +1,6 @@
-from auth.security import hash_password
 from schemas.users_sch import UserReg, UserOut, UserName, StdGroup, UserDelete
-from schemas.groups_sch import Spec, Group
+from schemas.groups_sch import Group, GroupDelete
+from auth.security import hash_password
 from databases.postgres import database
 from fastapi import HTTPException
 
@@ -24,14 +24,22 @@ async def get_specs() -> list:
             "SELECT Spec.spec_name, Qualify.qua_name FROM Spec "
             "JOIN Qualify ON Spec.qua_id = Qualify.id "
         )
+        if not specs:
+            raise HTTPException(400, "Специальности не найдены")
         return [dict(spec) for spec in specs]
 
 async def add_group(data: Group) -> dict:
     async with database.pool.acquire() as conn:
         try:
             spec = await conn.fetchrow("SELECT id FROM Spec WHERE spec_name = $1", data.spec_name)
+            if not spec:
+                raise HTTPException(400, "Специальность не найдена")
             lang = await conn.fetchrow("SELECT id FROM Lang WHERE lang_name = $1", data.lang)
+            if not lang:
+                raise HTTPException(400, "Язык не найден")
             qua = await conn.fetchrow("SELECT id FROM Qualify WHERE qua_name = $1", data.qua_name)
+            if not qua:
+                raise HTTPException(400, "Квалификация не найдена")
             await conn.fetchrow(
                 "INSERT INTO Groups (group_name, spec_id, lang_id, qua_id) VALUES ($1, $2, $3, $4)",
                 data.group_name,
@@ -52,6 +60,8 @@ async def get_groups() -> list:
             "JOIN Lang ON Groups.lang_id = Lang.id "
             "JOIN Qualify ON Groups.qua_id = Qualify.id "
         )
+        if not groups:
+            raise HTTPException(400, "Группы не найдены")
         return [dict(group) for group in groups]
 
 async def reg_user(data: UserReg) -> UserOut:
@@ -78,6 +88,8 @@ async def get_cur(name: UserName) -> list:
             "SELECT fullname FROM Users WHERE fullname = $1 AND role = 'curator'",
             name.fullname
         )
+        if not users:
+            raise HTTPException(400, "Кураторы не найдены")
         return [UserName(**dict(r)) for r in users]
 
 async def get_teach(name: UserName) -> list:
@@ -86,6 +98,8 @@ async def get_teach(name: UserName) -> list:
             "SELECT fullname FROM Users WHERE fullname = $1 AND role = 'teacher'",
             name.fullname
         )
+        if not users:
+            raise HTTPException(400, "Преподаватели не найдены")
         return [UserName(**dict(r)) for r in users]
 
 async def get_admin(name: UserName) -> list:
@@ -94,6 +108,8 @@ async def get_admin(name: UserName) -> list:
             "SELECT fullname FROM Users WHERE fullname = $1 AND role = 'admin'",
             name.fullname
         )
+        if not users:
+            raise HTTPException(400, "Администраторы не найдены")
         return [UserName(**dict(r)) for r in users]
 
 async def get_std(name: UserName) -> list:
@@ -102,6 +118,8 @@ async def get_std(name: UserName) -> list:
             "SELECT fullname FROM Users WHERE fullname = $1 AND role = 'student'",
             name.fullname
         )
+        if not users:
+            raise HTTPException(400, "Студенты не найдены")
         return [UserName(**dict(r)) for r in users]
 
 async def add_std_to_group(data: StdGroup) -> dict:
@@ -125,6 +143,8 @@ async def get_std_in_group() -> list:
             "JOIN Users ON Students_Groups.student_id = Users.id "
             "JOIN Groups ON Students_Groups.group_id = Groups.id "
         )
+        if not students:
+            raise HTTPException(400, "Студенты в группах не найдены")
         return [UserName(**dict(s)) for s in students]
 
 async def del_user(data: UserDelete) -> dict:
@@ -139,7 +159,7 @@ async def del_user(data: UserDelete) -> dict:
             print(e)
             raise HTTPException(400, "Ошибка при удалении пользователя")
 
-async def del_qroup(data: Group) -> dict:
+async def del_qroup(data: GroupDelete) -> dict:
     async with database.pool.acquire() as conn:
         try:
             await conn.fetchrow(
