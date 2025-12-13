@@ -1,5 +1,5 @@
 from auth.security import hash_password
-from schemas.users_sch import UserReg, UserOut, UserName
+from schemas.users_sch import UserReg, UserOut, UserName, StdGroup, UserDelete
 from schemas.groups_sch import Spec, Group
 from databases.postgres import database
 from fastapi import HTTPException
@@ -42,6 +42,7 @@ async def add_group(data: Group) -> dict:
             return {"ok": True}
         except Exception as e:
             print(e)
+            raise HTTPException(400, "Группа с таким именем уже существует")
 
 async def get_groups() -> list:
     async with database.pool.acquire() as conn:
@@ -102,3 +103,53 @@ async def get_std(name: UserName) -> list:
             name.fullname
         )
         return [UserName(**dict(r)) for r in users]
+
+async def add_std_to_group(data: StdGroup) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            group = await conn.fetchrow("SELECT id FROM Groups WHERE group_name = $1", data.group_name)
+            std = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'student'", data.fullname)
+            await conn.fetchrow(
+                "INSERT INTO Students_Groups (student_id, group_id) VALUES ($1, $2)",
+                std["id"], group["id"]
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при добавлении студента в группу")
+
+async def get_std_in_group() -> list:
+    async with database.pool.acquire() as conn:
+        students = await conn.fetch(
+            "SELECT Users.fullname Groups.group_name FROM Students_Groups "
+            "JOIN Users ON Students_Groups.student_id = Users.id "
+            "JOIN Groups ON Students_Groups.group_id = Groups.id "
+        )
+        return [UserName(**dict(s)) for s in students]
+
+async def del_user(data: UserDelete) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            await conn.fetchrow(
+                "DELETE FROM Users WHERE email = $1",
+                data.email
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при удалении пользователя")
+
+async def del_qroup(data: Group) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            await conn.fetchrow(
+                "DELETE FROM Groups WHERE group_name = $1",
+                data.group_name
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при удалении группы")
+
+
+

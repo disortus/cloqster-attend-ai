@@ -1,5 +1,5 @@
 from schemas.groups_sch import Group
-from schemas.users_sch import UserReg, UserOut, UserName
+from schemas.users_sch import UserReg, UserOut, UserName, StdGroup, UserDelete
 from fastapi import APIRouter, Depends
 from auth.utils import require_role
 
@@ -57,3 +57,23 @@ async def get_student(fullname: UserName):
 async def get_admins(fullname: UserName):
     from models.admin_models import get_admin
     return await get_admin(fullname)
+
+@admin_router.post("/add_std_to_group", response_model=dict)
+async def add_std_to_groups(data: StdGroup):
+    from models.admin_models import add_std_to_group
+    return await add_std_to_group(data)
+
+@admin_router.get("/std_in_groups", response_model=list)
+async def get_std_in_groups():
+    from models.admin_models import get_std_in_group
+    return await get_std_in_group()
+
+@admin_router.delete("/delete_group", response_model=dict)
+async def delete_group(data: Group):
+    from models.admin_models import del_qroup
+    return await del_qroup(data)
+
+@admin_router.delete("/delete_user", response_model=dict)
+async def delete_user(data: UserDelete):
+    from models.admin_models import del_user
+    return await del_user(data)

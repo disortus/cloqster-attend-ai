@@ -20,7 +20,12 @@ class UserLogin(BaseModel):
 
 class UserName(BaseModel):
     fullname: str
-    
+
+class StdGroup(UserName):
+    group_name: str
+
+class UserDelete(BaseModel):
+    email: EmailStr
 
 class Token(BaseModel):
     access_token: str
