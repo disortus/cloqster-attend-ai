@@ -9,7 +9,7 @@ ALGORITHM = "HS256"
 def create_token(payload: dict):
     token_payload = {
         **payload,
-        "exp": datetime.utcnow() + timedelta(hours=1)
+        "exp": datetime.now() + timedelta(hours=1)
     }
     return jwt.encode(token_payload, secret_key, algorithm=ALGORITHM)
 

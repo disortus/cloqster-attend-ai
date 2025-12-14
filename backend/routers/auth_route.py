@@ -18,7 +18,8 @@ async def login_user(data: UserLogin, response: Response):
         samesite="lax",
         secure=False  # True на HTTPS
     )
-    return {"user": user}
+    return {"token": token,
+            "user": user}
 
 
 @auth_router.post("/logout")
