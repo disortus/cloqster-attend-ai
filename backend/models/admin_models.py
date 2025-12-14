@@ -1,5 +1,6 @@
 from schemas.users_sch import UserReg, UserOut, UserName, StdGroup, UserDelete
-from schemas.groups_sch import Group, GroupDelete
+from schemas.groups_sch import Group, GroupDelete, GroupStdUpdate, CurGroupDelete
+from schemas.students_sch import StudentUpdate
 from auth.security import hash_password
 from databases.postgres import database
 from fastapi import HTTPException
@@ -171,5 +172,75 @@ async def del_qroup(data: GroupDelete) -> dict:
             print(e)
             raise HTTPException(400, "Ошибка при удалении группы")
 
+async def ch_std_group(data: GroupStdUpdate) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            group = await conn.fetchrow("SELECT id FROM Groups WHERE group_name = $1", data.group_name)
+            if not group:
+                raise HTTPException(400, "Группа не найдена")
+            std = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'student'", data.fullname)
+            if not std:
+                raise HTTPException(400, "Студент не найден")
+            new_group = await conn.fetchrow("SELECT id FROM Groups WHERE group_name = $1", data.new_group_name)
+            if not new_group:
+                raise HTTPException(400, "Новая группа не найдена")
+            await conn.fetchrow(
+                "UPDATE Students_Groups SET group_id = $1 WHERE student_id = $2 AND group_id = $3",
+                new_group["id"], std["id"], group["id"]
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при изменении группы студента")
 
 
+async def ch_std(data: StudentUpdate) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            await conn.fetchrow(
+                "UPDATE Users SET fullname = $1 WHERE fullname = $2 AND role = 'student'",
+                data.new_fullname, data.fullname
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при изменении данных студента")
+
+async def ch_cur_group(data: GroupStdUpdate) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            group = await conn.fetchrow("SELECT id FROM Groups WHERE group_name = $1", data.group_name)
+            if not group:
+                raise HTTPException(400, "Группа не найдена")
+            cur = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'curator'", data.fullname)
+            if not cur:
+                raise HTTPException(400, "Куратор не найден")
+            new_group = await conn.fetchrow("SELECT id FROM Groups WHERE group_name = $1", data.new_group_name)
+            if not new_group:
+                raise HTTPException(400, "Новая группа не найдена")
+            await conn.fetchrow(
+                "UPDATE Curators SET group_id = $1 WHERE user_id = $2 AND group_id = $3",
+                new_group["id"], cur["id"], group["id"]
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при изменении группы куратора")
+
+async def del_cur_group(data: CurGroupDelete) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            cur = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'curator'", data.fullname)
+            if not cur:
+                raise HTTPException(400, "Куратор не найден")
+            group = await conn.fetchrow("SELECT id FROM Groups WHERE group_name = $1", data.group_name)
+            if not group:
+                raise HTTPException(400, "Группа не найдена")
+            await conn.fetchrow(
+                "DELETE FROM Curators WHERE user_id = $1 AND group_id = $2",
+                cur["id"], group["id"]
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при удалении куратора из группы")

@@ -1,5 +1,6 @@
-from schemas.groups_sch import Group, GroupDelete
+from schemas.groups_sch import Group, GroupDelete, GroupStdUpdate, CurGroupDelete
 from schemas.users_sch import UserReg, UserOut, UserName, StdGroup, UserDelete
+from schemas.students_sch import StudentUpdate
 from fastapi import APIRouter, Depends
 from auth.utils import require_role
 
@@ -77,3 +78,23 @@ async def delete_group(data: GroupDelete):
 async def delete_user(data: UserDelete):
     from models.admin_models import del_user
     return await del_user(data)
+
+@admin_router.put("/change_student", response_model=dict)
+async def change_student(data: StudentUpdate):
+    from models.admin_models import ch_std
+    return await ch_std(data)
+
+@admin_router.put("/change_student_group", response_model=dict)
+async def change_student_group(data: GroupStdUpdate):
+    from models.admin_models import ch_std_group
+    return await ch_std_group(data)
+
+@admin_router.delete("/curator_delete_group", response_model=dict)
+async def curator_delete_group(data: CurGroupDelete):
+    from models.admin_models import del_cur_group
+    return await del_cur_group(data)
+
+@admin_router.put("/change_curator_group", response_model=dict)
+async def change_curator_group(data: GroupStdUpdate):
+    from models.admin_models import ch_cur_group
+    return await ch_cur_group(data)
