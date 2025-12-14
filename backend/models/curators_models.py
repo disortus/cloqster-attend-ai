@@ -11,28 +11,27 @@ async def add_face(data: UserName, img: bytes = File(...)) -> dict:
         with open(f"{file_path}/{data.fullname}.jpg", "wb") as image:
             image.write(img)
             image.close()
-        try:
+
             async with database.pool.acquire() as conn:
                 std = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'student'", data.fullname)
                 if not std:
                     raise HTTPException(400, "Студент не найден")
                 await conn.fetchrow("INSERT INTO Faces (student_id, img_path) VALUES ($1, $2)", std["id"], f"{file_path}/{data.fullname}.jpg")
                 return {"ok": True}
-        except Exception as e:
-            print(f"error: {e}")
-    except HTTPException as e:
-        print(f"http error: {e}")
+    except Exception as e:
+        print(f"error: {e}")
+        raise HTTPException(400, "Ошибка при добавлении лица студента")
 
 async def get_std(data: UserName) -> list:
     async with database.pool.acquire() as conn:
         cur = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'curator'", data.fullname)
         if not cur:
             raise HTTPException(400, "Куратор не найден")
-        group = await conn.fetchrow("SELECT group_id FROM Curators WHERE user_id = $1", cur["id"])
+        group = await conn.fetchrow("SELECT id FROM Groups WHERE curator_id = $1", cur["id"])
         if not group:
             raise HTTPException(400, "Куратор не назначен ни в одну группу")
         stds = await conn.fetch(
-            "SELECT Users.fullname, Groups.group_name FROM Students_Groups WHERE group_id = $1", group["group_id"]
+            "SELECT Users.fullname, Groups.group_name FROM Students_Groups WHERE group_id = $1", group["id"]
         )
         return [dict(std) for std in stds]
     
@@ -41,7 +40,7 @@ async def del_std(data: StudentDelete) -> dict:
         cur = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'curator'", data.cur_fullname)
         if not cur:
             raise HTTPException(400, "Куратор не найден")
-        group = await conn.fetchrow("SELECT group_id FROM Curators WHERE user_id = $1", cur["id"])
+        group = await conn.fetchrow("SELECT id FROM Groups WHERE curator_id = $1", cur["id"])
         if not group:
             raise HTTPException(400, "Куратор не назначен ни в одну группу")
         std = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'student'", data.std_fullname)

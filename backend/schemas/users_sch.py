@@ -13,7 +13,6 @@ class UserOut(BaseModel):
     fullname: str
     role: str
 
-
 class UserLogin(BaseModel):
     email: EmailStr
     password: str    

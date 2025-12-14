@@ -1,12 +1,30 @@
 from schemas.users_sch import UserLogin, Token, UserOut
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from models import users_models
 from auth import utils
+
 auth_router = APIRouter(tags=["auth"])
 
-@auth_router.post("/login", response_model=Token)
-async def login_user(data: UserLogin):
-    return await users_models.login_user(data)
+@auth_router.post("/login")
+async def login_user(data: UserLogin, response: Response):
+    token, user = await users_models.login_user(data)
+
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        max_age=60 * 60,  # 1 час
+        path="/",
+        samesite="lax",
+        secure=False  # True на HTTPS
+    )
+    return {"user": user}
+
+
+@auth_router.post("/logout")
+async def logout(response: Response):
+    response.delete_cookie("access_token", path="/")
+    return {"msg": "logged out"}
 
 @auth_router.post("/me", response_model=UserOut)
 async def get_current_user_info(current_user=Depends(utils.get_current_user)):

@@ -7,11 +7,12 @@ class Spec(BaseModel):
 
 class Group(Spec):
      group_name: str
+     fullname: str  # curator's fullname
 
 class GroupDelete(BaseModel):
      group_name: str
 
-class CurGroupDelete(GroupDelete):
+class GroupCurUpdate(GroupDelete):
      fullname: str
 
 class GroupUpdate(BaseModel):
@@ -22,3 +23,4 @@ class GroupStdUpdate(BaseModel):
      group_name: str
      fullname: str
      new_group_name: str
+     
