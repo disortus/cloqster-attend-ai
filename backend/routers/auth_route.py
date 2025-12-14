@@ -26,6 +26,6 @@ async def logout(response: Response):
     response.delete_cookie("access_token", path="/")
     return {"msg": "logged out"}
 
-@auth_router.post("/me", response_model=UserOut)
+@auth_router.get("/me", response_model=UserOut)
 async def get_current_user_info(current_user=Depends(utils.get_current_user)):
     return current_user
