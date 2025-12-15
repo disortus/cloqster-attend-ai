@@ -22,11 +22,6 @@ async def fetch_specs():
     from models.admin_models import get_specs
     return await get_specs()
 
-# @admin_router.post("/specs")
-# async def create_spec(data: Spec):
-#     from models.admin_models import add_spec
-#     return await add_spec(data)
-
 @admin_router.post("/groups", response_model=dict)
 async def create_group(data: Group):
     from models.admin_models import add_group
@@ -146,3 +141,23 @@ async def delete_audience(data: AudSchema):
 async def fetch_attends():
     from models.admin_models import get_attends
     return await get_attends()
+
+@admin_router.get("/dashboard_stats", response_model=dict)
+async def dashboard_stats():
+    from models.admin_models import dashboard_metrics
+    return await dashboard_metrics()
+
+@admin_router.get("/attendance_report", response_model=list)
+async def attendance_report():
+    from models.admin_models import dashboard_trend
+    return await dashboard_trend()
+
+@admin_router.get("/performance_report", response_model=dict)
+async def performance_report():
+    from models.admin_models import dashboard_today_breakdown
+    return await dashboard_today_breakdown()
+
+@admin_router.get("/dashboard_overview", response_model=list)
+async def dashboard_overview():
+    from models.admin_models import dashboard_activity
+    return await dashboard_activity()

@@ -130,7 +130,7 @@ async def add_std_to_group(data: StdGroup) -> dict:
 async def get_std_in_group() -> list:
     async with database.pool.acquire() as conn:
         students = await conn.fetch(
-            "SELECT Users.fullname Groups.group_name FROM Students_Groups "
+            "SELECT Users.fullname,                                                                                                                                                                                                                                                                                                               Groups.group_name FROM Students_Groups "
             "JOIN Users ON Students_Groups.student_id = Users.id "
             "JOIN Groups ON Students_Groups.group_id = Groups.id "
         )
@@ -279,7 +279,7 @@ async def del_subject(data: Subject) -> dict:
     async with database.pool.acquire() as conn:
         try:
             await conn.fetchrow(
-                "DELETE FROM Subjects WHERE subject_name = $1",
+                "DELETE FROM Subjects WHERE subj_name = $1",
                 data.subj_name
             )
             return {"ok": True}
@@ -344,3 +344,99 @@ async def get_attends() -> list:
         if not attends:
             raise HTTPException(400, "Посещаемость не найдена")
         return [dict(att) for att in attends]
+    
+async def dashboard_metrics() -> dict:
+    async with database.pool.acquire() as conn:
+        row = await conn.fetchrow("""
+            WITH today AS (
+                SELECT a.status
+                FROM Attends a
+                JOIN Lessons l ON l.id = a.lesson_id
+                WHERE l.lesson_date = CURRENT_DATE
+            )
+            SELECT
+                COUNT(*) FILTER (WHERE status='present') AS present,
+                COUNT(*) FILTER (WHERE status='absent') AS absent,
+                COUNT(*) FILTER (WHERE status='late') AS late,
+                COUNT(*) AS total,
+                (SELECT COUNT(*) FROM Groups) AS groups,
+                (SELECT COUNT(*) FROM Users WHERE role='student') AS students
+            FROM today
+        """)
+        if not row:
+            raise HTTPException(400, "Не удалось получить метрики")
+        percent = 0 if row["total"] == 0 else round(row["present"] / row["total"] * 100)
+        
+        return {
+            "present": row["present"],
+            "absent": row["absent"],
+            "late": row["late"],
+            "total": row["total"],
+            "attendance_percent": percent,
+            "groups": row["groups"],
+            "students": row["students"]
+        }
+
+async def dashboard_trend() -> list:
+    async with database.pool.acquire() as conn:
+        rows = await conn.fetch("""
+            SELECT
+                l.lesson_date,
+                ROUND(
+                    COUNT(*) FILTER (WHERE a.status='present')::numeric
+                    / NULLIF(COUNT(*),0) * 100
+                ) AS percent
+            FROM Lessons l
+            LEFT JOIN Attends a ON a.lesson_id = l.id
+            WHERE l.lesson_date >= CURRENT_DATE - INTERVAL '6 days'
+            GROUP BY l.lesson_date
+            ORDER BY l.lesson_date
+        """)
+        if not rows:
+            raise HTTPException(400, "Не удалось получить тренд посещаемости")
+        return [dict(row) for row in rows]
+        
+async def dashboard_today_breakdown() -> dict:
+      async with database.pool.acquire() as conn:
+        row = await conn.fetchrow("""
+            SELECT
+                COUNT(*) FILTER (WHERE status='present') AS present,
+                COUNT(*) FILTER (WHERE status='absent') AS absent,
+                COUNT(*) FILTER (WHERE status='late') AS late,
+                COUNT(*) FILTER (WHERE status='excused') AS excused,
+                COUNT(*) AS total
+            FROM Attends a
+            JOIN Lessons l ON l.id = a.lesson_id
+            WHERE l.lesson_date = CURRENT_DATE
+        """)
+        if not row:
+            raise HTTPException(400, "Не удалось получить разбивку посещаемости за сегодня")
+        total = row["total"] or 0
+        pct = lambda x: 0 if total == 0 else round(x / total * 100)
+        return {
+            "present": {"count": row["present"], "percent": pct(row["present"])},
+            "absent": {"count": row["absent"], "percent": pct(row["absent"])},
+            "late": {"count": row["late"], "percent": pct(row["late"])},
+            "excused": {"count": row["excused"], "percent": pct(row["excused"])},
+            "total": total,
+        }
+        
+async def dashboard_activity() -> list:
+    async with database.pool.acquire() as conn:
+        rows = await conn.fetch("""
+            SELECT
+                u.fullname,
+                g.group_name,
+                a.status,
+                a.come_at
+            FROM Attends a
+            JOIN Users u ON u.id = a.student_id
+            JOIN Lessons l ON l.id = a.lesson_id
+            LEFT JOIN Students_Groups sg ON sg.student_id = u.id
+            LEFT JOIN Groups g ON g.id = sg.group_id
+            WHERE l.lesson_date = CURRENT_DATE
+            ORDER BY a.come_at DESC NULLS LAST
+        """)
+        if not rows:    
+            raise HTTPException(400, "Не удалось получить активность сегодня")
+        return [dict(row) for row in rows]
