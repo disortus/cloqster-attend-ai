@@ -1,13 +1,19 @@
-    import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 import { MdOutlineEmail, MdLockOutline } from "react-icons/md";
+import { AuthContext } from "../../auth/AuthContext";
+
+const API = "http://localhost:5000";
 
 const LoginForm = () => {
+    const { login } = useContext(AuthContext);
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -16,26 +22,24 @@ const LoginForm = () => {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:5000/api/login", {
+            const res = await fetch(`${API}/login`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ email, password }),
             });
 
+            const data = await res.json().catch(() => ({}));
+
             if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                throw new Error(data.message || "Кіру кезінде қате пайда болды");
+                throw new Error(data.detail || data.message || "Кіру кезінде қате пайда болды");
             }
 
-            const data = await res.json();
-            console.log("Успешный вход:", data);
+            // ожидаем { user: {...} }
+            const user = data.user ?? data;
+            login(user);
 
-            navigate("/home");
+            navigate("/home"); // если /home нет — поменяй на нужный роут
         } catch (err) {
             setError(err.message);
         } finally {
@@ -47,6 +51,7 @@ const LoginForm = () => {
         <div className="wrapper">
             <form onSubmit={handleSubmit}>
                 <h1>Қош келдіңіз!</h1>
+
                 <div className="login-form">
                     <p>Email</p>
                     <div className="input-box">
