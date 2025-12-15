@@ -1,10 +1,16 @@
-from pydantic import BaseModel
-from pydantic import EmailStr
+from pydantic import BaseModel, EmailStr
+from enum import Enum
+
+class UserRole(str, Enum):
+    admin = "admin"
+    curator = "curator"
+    teacher = "teacher"
+    student = "student"
 
 class UserReg(BaseModel):
     email: EmailStr
     password: str
-    role: str 
+    role: UserRole
     fullname: str
     
 

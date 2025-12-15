@@ -1,23 +1,12 @@
 from schemas.users_sch import UserReg, UserOut, UserName, StdGroup, UserDelete
-from schemas.groups_sch import Group, GroupDelete, GroupStdUpdate, GroupCurUpdate
+from schemas.groups_sch import Group, GroupDelete, GroupCurUpdate
+from schemas.schedules_sch import Schedule
+from schemas.subj_sch import Subject
+from schemas.aud_sch import AudSchema
 from schemas.students_sch import StudentUpdate
 from auth.security import hash_password
 from databases.postgres import database
 from fastapi import HTTPException
-
-
-# async def add_spec(data: Spec) -> dict:
-#     async with database.pool.acquire() as conn:
-#         try:
-#             await conn.fetchrow(
-#                 "INSERT INTO Lang (lang_name) VALUES ($1)", data.lang
-#             )
-#             await conn.fetchrow("INSERT INTO Qualify (qua_name) VALUES ($1)", data.qua_name)
-#             q_id = await conn.fetchrow("SELECT id FROM Qualify WHERE qua_name = $1", data.qua_name)
-#             await conn.fetchrow("INSERT INTO Spec (spec_name, qua_id) VALUES ($1, $2)", data.spec_name, q_id["id"])
-#             return {"ok": True}
-#         except Exception as e:
-#             print(e)
 
 async def get_specs() -> list:
     async with database.pool.acquire() as conn:
@@ -88,41 +77,37 @@ async def reg_user(data: UserReg) -> UserOut:
 
         return UserOut(**dict(user))
     
-async def get_cur(name: UserName) -> list:
+async def get_cur() -> list:
     async with database.pool.acquire() as conn:
         users = await conn.fetch(
-            "SELECT fullname FROM Users WHERE fullname = $1 AND role = 'curator'",
-            name.fullname
+            "SELECT fullname FROM Users WHERE role = 'curator'"
         )
         if not users:
             raise HTTPException(400, "Кураторы не найдены")
         return [UserName(**dict(r)) for r in users]
 
-async def get_teach(name: UserName) -> list:
+async def get_teach() -> list:
     async with database.pool.acquire() as conn:
         users = await conn.fetch(
-            "SELECT fullname FROM Users WHERE fullname = $1 AND role = 'teacher'",
-            name.fullname
+            "SELECT fullname FROM Users WHERE role = 'teacher'"
         )
         if not users:
             raise HTTPException(400, "Преподаватели не найдены")
         return [UserName(**dict(r)) for r in users]
 
-async def get_admin(name: UserName) -> list:
+async def get_admin() -> list:
     async with database.pool.acquire() as conn:
         users = await conn.fetch(
-            "SELECT fullname FROM Users WHERE fullname = $1 AND role = 'admin'",
-            name.fullname
+            "SELECT fullname FROM Users WHERE role = 'admin'"
         )
         if not users:
             raise HTTPException(400, "Администраторы не найдены")
         return [UserName(**dict(r)) for r in users]
 
-async def get_std(name: UserName) -> list:
+async def get_std() -> list:
     async with database.pool.acquire() as conn:
         users = await conn.fetch(
-            "SELECT fullname FROM Users WHERE fullname = $1 AND role = 'student'",
-            name.fullname
+            "SELECT fullname FROM Users WHERE role = 'student'"
         )
         if not users:
             raise HTTPException(400, "Студенты не найдены")
@@ -223,3 +208,139 @@ async def ch_cur_group(data: GroupCurUpdate) -> dict:
             print(e)
             raise HTTPException(400, "Ошибка при изменении куратора группы")
 
+async def add_schedule(data: Schedule) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            group = await conn.fetchrow("SELECT id FROM Groups WHERE group_name = $1", data.group_name)
+            if not group:
+                raise HTTPException(400, "Группа не найдена")
+            teacher = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'teacher'", data.teacher_fullname)
+            if not teacher:
+                raise HTTPException(400, "Преподаватель не найден")
+            subj = await conn.fetchrow("SELECT id FROM Subjects WHERE subj_name = $1", data.subj_name)
+            if not subj:
+                raise HTTPException(400, "Предмет не найден")
+            aud = await conn.fetchrow("SELECT id FROM Audience WHERE aud_number = $1", data.aud_number)
+            if not aud:
+                raise HTTPException(400, "Аудитория не найдена")
+            await conn.fetchrow(
+                "INSERT INTO Schedules (group_id, weekday, start_time, end_time, teacher_id, subj_id, aud_id, valid_from, valid_to)"
+                "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+                group["id"], data.weekday, data.start_time, data.end_time,
+                teacher["id"], subj["id"], aud["id"], data.valid_from, data.valid_to
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при добавлении расписания")
+
+async def get_schedules() -> list:
+    async with database.pool.acquire() as conn:
+        schedules = await conn.fetch(
+            "SELECT Groups.group_name, Schedules.weekday, Schedules.start_time, Schedules.end_time, "
+            "Subjects.subj_name, Users.fullname AS teacher_fullname, Audience.aud_number, "
+            "Schedules.valid_from, Schedules.valid_to "
+            "FROM Schedules "
+            "JOIN Groups ON Schedules.group_id = Groups.id "
+            "JOIN Users ON Schedules.teacher_id = Users.id "
+            "JOIN Subjects ON Schedules.subj_id = Subjects.id "
+            "JOIN Audience ON Schedules.aud_id = Audience.id "
+        )
+        if not schedules:
+            raise HTTPException(400, "Расписания не найдены")
+        return [dict(sch) for sch in schedules]
+
+async def add_subject(data: Subject) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            spec = await conn.fetchrow("SELECT id FROM Spec WHERE spec_name = $1", data.spec_name)
+            if not spec:
+                raise HTTPException(400, "Специальность не найдена")
+            await conn.fetchrow(
+                "INSERT INTO Subjects (subj_name, spec_id) VALUES ($1, $2)",
+                data.subj_name, spec["id"]
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при добавлении предмета")
+
+async def get_subjects() -> list:
+    async with database.pool.acquire() as conn:
+        subjects = await conn.fetch(
+            "SELECT Subjects.subj_name, Spec.spec_name FROM Subjects "
+            "JOIN Spec ON Subjects.spec_id = Spec.id "
+        )
+        if not subjects:
+            raise HTTPException(400, "Предметы не найдены")
+        return [dict(subj) for subj in subjects]
+
+async def del_subject(data: Subject) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            await conn.fetchrow(
+                "DELETE FROM Subjects WHERE subject_name = $1",
+                data.subj_name
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при удалении предмета")
+
+async def del_schedule(data: GroupDelete) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            await conn.fetchrow(
+                "DELETE FROM Schedules WHERE group_id = (SELECT id FROM Groups WHERE group_name = $1)",
+                data.group_name
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при удалении расписания")
+
+async def add_aud(data: AudSchema) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            aud_type_id = await conn.fetchrow("SELECT id FROM Audience_types WHERE aud_type = $1", data.aud_type)
+            await conn.fetchrow(
+                "INSERT INTO Audience (aud_number, build, aud_type_id) VALUES ($1, $2, $3)", data.aud_number, data.build, aud_type_id["id"]
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при добавлении аудитории")
+
+async def get_aud() -> list:
+    async with database.pool.acquire() as conn:
+        audience = await conn.fetch(
+            "SELECT Audience.aud_number, Audience.build, Audience_types.aud_type FROM Audience "
+            "JOIN Audience_types ON Audience.aud_type_id = Audience_types.id "
+        )
+        if not audience:
+            raise HTTPException(400, "Аудитории не найдены")
+        return [dict(aud) for aud in audience]
+
+async def del_aud(data: AudSchema) -> dict:
+    async with database.pool.acquire() as conn:
+        try:
+            await conn.fetchrow(
+                "DELETE FROM Audience WHERE aud_number = $1",
+                data.aud_number
+            )
+            return {"ok": True}
+        except Exception as e:
+            print(e)
+            raise HTTPException(400, "Ошибка при удалении аудитории")
+
+async def get_attends() -> list:
+    async with database.pool.acquire() as conn:
+        attends = await conn.fetch(
+            "SELECT Attends.id, Users.fullname, Lessons.lesson_date, Attends.status, Attends.come_at, Attends.last_seen "
+            "FROM Attends "
+            "JOIN Users ON Attends.student_id = Users.id "
+            "JOIN Lessons ON Attends.lesson_id = Lessons.id "
+        )
+        if not attends:
+            raise HTTPException(400, "Посещаемость не найдена")
+        return [dict(att) for att in attends]
