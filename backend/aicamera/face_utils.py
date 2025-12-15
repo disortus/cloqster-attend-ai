@@ -3,21 +3,19 @@ import cv2
 import face_recognition
 import requests
 import time
-import argparse
 from datetime import datetime
 from .face_utils import load_known_encodings
-from .config import CAMERAS_CONFIG, TOLERANCE, PROCESS_EVERY_N_FRAMES, ENCODINGS_RELOAD_INTERVAL
+from .config import  TOLERANCE, PROCESS_EVERY_N_FRAMES, ENCODINGS_RELOAD_INTERVAL, RTSP_URL, API_URL, AUD_ID
 
 async def process_camera(aud_id: int):
     """
     Основной процессор для одной камеры: читает поток, распознаёт лица, отправляет обновления в API.
     """
-    if aud_id not in CAMERAS_CONFIG:
-        raise ValueError(f"Нет конфига для aud_id {aud_id}")
 
-    config = CAMERAS_CONFIG[aud_id]
-    rtsp_url = config["rtsp_url"]
-    api_url = config["api_url"]
+
+    config = AUD_ID
+    rtsp_url = RTSP_URL
+    api_url = API_URL
 
     # Инициализация
     known_encodings, known_student_ids = await load_known_encodings()
@@ -91,6 +89,4 @@ async def process_camera(aud_id: int):
 
 if __name__ == "__main__":
 
-    args = parser.parse_args()
-
-    asyncio.run(process_camera(args.aud_id))
+    asyncio.run(process_camera())
