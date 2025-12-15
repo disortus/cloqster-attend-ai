@@ -1,5 +1,8 @@
 from schemas.groups_sch import Group, GroupDelete, GroupStdUpdate, GroupCurUpdate
 from schemas.users_sch import UserReg, UserOut, UserName, StdGroup, UserDelete
+from schemas.subj_sch import Subject
+from schemas.aud_sch import AudSchema
+from schemas.schedules_sch import Schedule
 from schemas.students_sch import StudentUpdate
 from fastapi import APIRouter, Depends
 from auth.utils import require_role
@@ -39,25 +42,25 @@ async def register_user(data: UserReg):
     from models.admin_models import reg_user
     return await reg_user(data)
 
-@admin_router.post("/get_curator", response_model=list)
-async def get_curator(fullname: UserName):
+@admin_router.get("/get_curator", response_model=list)
+async def get_curator():
     from models.admin_models import get_cur
-    return await get_cur(fullname)
+    return await get_cur()
 
-@admin_router.post("/get_teacher", response_model=list)
-async def get_teacher(fullname: UserName):
+@admin_router.get("/get_teacher", response_model=list)
+async def get_teacher():
     from models.admin_models import get_teach
-    return await get_teach(fullname)
+    return await get_teach()
 
-@admin_router.post("/get_student", response_model=list)
-async def get_student(fullname: UserName):
+@admin_router.get("/get_student", response_model=list)
+async def get_student():
     from models.admin_models import get_std
-    return await get_std(fullname)
+    return await get_std()
 
-@admin_router.post("/get_admin", response_model=list)
-async def get_admins(fullname: UserName):
+@admin_router.get("/get_admin", response_model=list)
+async def get_admins():
     from models.admin_models import get_admin
-    return await get_admin(fullname)
+    return await get_admin()
 
 @admin_router.post("/add_std_to_group", response_model=dict)
 async def add_std_to_groups(data: StdGroup):
@@ -93,3 +96,53 @@ async def change_curator_group(data: GroupCurUpdate):
 async def remove_student_from_group(data: StdGroup):
     from models.admin_models import del_std_from_group
     return await del_std_from_group(data)
+
+@admin_router.post("/add_subject", response_model=dict)
+async def add_subject(data: Subject):
+    from models.admin_models import add_subject
+    return await add_subject(data)
+
+@admin_router.post("/add_schedule", response_model=dict)
+async def add_schedule(data: Schedule):
+    from models.admin_models import add_schedule
+    return await add_schedule(data)
+
+@admin_router.get("/schedules", response_model=list)
+async def fetch_schedules():
+    from models.admin_models import get_schedules
+    return await get_schedules()
+
+@admin_router.get("/subjects", response_model=list)
+async def fetch_subjects():
+    from models.admin_models import get_subjects
+    return await get_subjects()
+
+@admin_router.delete("/delete_subject", response_model=dict)
+async def delete_subject(data: Subject):
+    from models.admin_models import del_subject
+    return await del_subject(data)
+
+@admin_router.delete("/delete_schedule", response_model=dict)
+async def delete_schedule(data: GroupDelete):
+    from models.admin_models import del_schedule
+    return await del_schedule(data)
+
+@admin_router.post("/add_audience", response_model=dict)
+async def add_audience(data: AudSchema):
+    from models.admin_models import add_aud
+    return await add_aud(data)
+
+@admin_router.get("/audiences", response_model=list)
+async def fetch_audiences():
+    from models.admin_models import get_aud
+    return await get_aud()
+
+@admin_router.delete("/delete_audience", response_model=dict)
+async def delete_audience(data: AudSchema):
+    from models.admin_models import del_aud
+    return await del_aud(data)
+
+@admin_router.get("/get_attends", response_model=list)
+async def fetch_attends():
+    from models.admin_models import get_attends
+    return await get_attends()

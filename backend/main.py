@@ -4,6 +4,8 @@ from databases.postgres import database
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import subprocess
+import asyncio
+
 
 origins = [
     "http://localhost:3000",
@@ -15,6 +17,15 @@ origins = [
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await database.connect()
+
+    from aicamera.face_db import load_faces
+    from aicamera.camera_worker import camera_worker
+    from scheduler.loop import scheduler_loop
+
+    await load_faces()
+
+    asyncio.create_task(camera_worker())
+    asyncio.create_task(scheduler_loop())
     yield
     await database.disconnect()
 

@@ -7,8 +7,8 @@ import json
 
 cur_router = APIRouter(
     prefix="/curator",
-    tags=["Curator"],
-    dependencies=[Depends(require_role("curator"))]
+    tags=["Curator"]
+    # dependencies=[Depends(require_role("curator"))]
 )
 
 @cur_router.get("")
@@ -16,11 +16,9 @@ async def curator_zone(user=Depends(require_role("curator"))):
     return {"msg": "welcome curator/teacher", "user": user}
 
 @cur_router.post("/add_face")
-async def add_faces(data: str = Form(...), img: bytes = File(...)):
+async def add_faces(student_id: int = Form(...), img: bytes = File(...)):
     from models.curators_models import add_face
-    data = UserName(**json.loads(data))
-    return await add_face(data, img)
-
+    return await add_face(student_id, img)
 @cur_router.get("/get_std")
 async def get_stds(data: UserName):
     from models.curators_models import get_std
@@ -35,3 +33,9 @@ async def del_stds(data: StudentDelete):
 async def ch_stds(data: StudentUpdate):
     from models.curators_models import ch_std
     return await ch_std(data)
+
+@cur_router.post("/camera/reload_faces")
+async def reload_faces():
+    from aicamera.face_db import load_faces
+    await load_faces()
+    return {"status": "ok"}

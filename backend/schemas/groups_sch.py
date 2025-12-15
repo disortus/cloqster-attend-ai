@@ -1,8 +1,20 @@
 from pydantic import BaseModel
+from enum import Enum
+
+class Qualification(str, Enum):
+     bacalvr = "bacalvr"
+     magistr = "magistr"
+     doctor = "doctor"
+     college = "college"
+
+class Lang(str, Enum):
+     ru = "rus"
+     kz = "kaz"
+     en = "eng"
 
 class Spec(BaseModel):
-     qua_name: str
-     lang: str
+     qua_name: Qualification
+     lang: Lang
      spec_name: str
 
 class Group(Spec):

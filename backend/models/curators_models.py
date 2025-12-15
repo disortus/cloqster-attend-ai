@@ -1,26 +1,46 @@
-from schemas.users_sch import UserName
+from schemas.users_sch import UserName, StdGroup
 from schemas.students_sch import StudentUpdate, StudentDelete
 from databases.postgres import database
 from fastapi import HTTPException, File
 from pathlib import Path
 
-file_path = Path(__file__).resolve().parent.parent / "databases" / "imgs"
+BASE_PATH = Path(__file__).resolve().parent.parent / "databases" / "imgs"
+BASE_PATH.mkdir(parents=True, exist_ok=True)
 
-async def add_face(data: UserName, img: bytes = File(...)) -> dict:
-    try:
-        with open(f"{file_path}/{data.fullname}.jpg", "wb") as image:
-            image.write(img)
-            image.close()
+async def add_face(student_id: int, img: bytes = File(...)) -> dict:
+    async with database.pool.acquire() as conn:
+        async with conn.transaction():
+            student = await conn.fetchrow("""
+                select id
+                from Users
+                where id = $1 and role = 'student'
+            """, student_id)
+            if not student:
+                raise HTTPException(400, "Студент не найден")
 
-            async with database.pool.acquire() as conn:
-                std = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'student'", data.fullname)
-                if not std:
-                    raise HTTPException(400, "Студент не найден")
-                await conn.fetchrow("INSERT INTO Faces (student_id, img_path) VALUES ($1, $2)", std["id"], f"{file_path}/{data.fullname}.jpg")
-                return {"ok": True}
-    except Exception as e:
-        print(f"error: {e}")
-        raise HTTPException(400, "Ошибка при добавлении лица студента")
+            # имя файла = student_id
+            img_path = BASE_PATH / f"{student_id}.jpg"
+            try:
+                # сохраняем файл
+                with open(img_path, "wb") as f:
+                    f.write(img)
+
+                # деактивируем старое лицо (если было)
+                await conn.execute("""
+                    update Faces
+                    set is_active = false
+                    where student_id = $1
+                """, student_id)
+
+                # вставляем новое
+                await conn.execute("""
+                    insert into Faces (student_id, img_path, is_active)
+                    values ($1, $2, true)
+                """, student_id, str(img_path))
+            except Exception as e:
+                print(e)
+                raise HTTPException(500, "Ошибка при сохранении лица")
+    return {"ok": True}
 
 async def get_std(data: UserName) -> list:
     async with database.pool.acquire() as conn:
