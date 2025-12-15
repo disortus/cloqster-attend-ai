@@ -1,7 +1,8 @@
 import asyncio
-from scheduler.attendance_service import attendance_tick
+from scheduler.lessons import create_today_lessons, watch_lessons
 
 async def scheduler_loop():
     while True:
-        await attendance_tick()
+        await create_today_lessons()
+        await watch_lessons()
         await asyncio.sleep(60)
