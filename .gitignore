@@ -4,6 +4,12 @@
 venv/
 .env/
 .env.*
+frontend/.env
+frontend/.env.*
+frontend/venv/
+backend/.env
+backend/.env.*
+backend/venv/
 
 
 # кэш питона
@@ -40,6 +46,8 @@ tmp/
 .pytest_cache/
 coverage/
 
+# pickle файлы
+*.pkl
 
 # ==== REACT FRONTEND ====
 

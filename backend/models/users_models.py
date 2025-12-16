@@ -26,3 +26,4 @@ async def login_user(data: UserLogin):
             "fullname": user["fullname"],
             "role": user["role"]
         }
+
