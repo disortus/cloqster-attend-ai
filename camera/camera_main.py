@@ -18,7 +18,6 @@ RTSP_URL = "rtsp://disortus:new_pass125@192.168.1.101:554/stream1"
 RECOGNITION_INTERVAL = 2.0
 DISTANCE_THRESHOLD = 1
 COOLDOWN_PER_PERSON = 10
-student_state = {}  # {student_id: {"status": str, "last_seen": float, "lesson_key": tuple | None}}
 STATE_TIMEOUT = 15  # секунд — если не видели >15 сек во время урока → left
 
 cache_lock = threading.Lock()
@@ -26,7 +25,18 @@ frame_lock = threading.Lock()
 latest_frame = None
 last_recognition_time = 0
 
+#     "student_id": {
+#         "current_status": "present/left/absent",
+#         "final_status": "present/late/absent",   # ← Новый: фиксированный на урок
+#         "last_seen": timestamp,
+#         "lesson_key": (weekday, (start_time, end_time)),
+#         "first_seen_during_lesson": timestamp | None  # Для определения опоздания
+#     }
+# }
+
+student_state = {}  # {student_id: {"status": str, "last_seen": float, "lesson_key": tuple | None}}
 schedule_cache = {}
+lesson_cache = {}
 last_seen = {}
 
 executor = ThreadPoolExecutor(max_workers=2)
@@ -34,14 +44,15 @@ executor = ThreadPoolExecutor(max_workers=2)
 async def load_schedule():
     global schedule_cache
     async with database.pool.acquire() as conn:
-        rows = await conn.fetch("SELECT weekday, start_time, end_time FROM Schedules ORDER BY weekday, start_time")
+        rows = await conn.fetch("SELECT id, weekday, start_time, end_time FROM Schedules ORDER BY weekday, start_time")
+        rows2 = await conn.fetch("SELECT id FROM Lessons WHERE schedule_id = $1 AND ")
     
     new_cache = {}
     for row in rows:
         weekday = row['weekday']
         if weekday not in new_cache:
             new_cache[weekday] = []
-        new_cache[weekday].append((row['start_time'], row['end_time']))
+        new_cache[weekday].append((row['id'], row['start_time'], row['end_time']))
     
     with cache_lock:
         schedule_cache = new_cache
@@ -53,52 +64,67 @@ async def schedule_refresher():
         await asyncio.sleep(6 * 3600)
 
 def get_current_lesson(weekday: int, cur_time: time) -> tuple | None:
-    """Возвращает (start_time, end_time) текущего урока или None"""
+    """
+    Возвращает (schedule_id, start_time, end_time) или None
+    """
     with cache_lock:
         lessons = schedule_cache.get(weekday, [])
     
-    for start, end in lessons:
+    for sched_id, start, end in lessons:
         if start <= cur_time <= end:
-            return (start, end)
+            return (sched_id, start, end)
     return None
 
 def update_student_status(student_id: str, now: datetime, current_lesson: tuple | None):
     global student_state
     
     current_time = time.time()
-    lesson_key = current_lesson  # (start, end) как ключ урока
+    lesson_key = current_lesson  # (start, end) или None
     
     state = student_state.get(student_id, {
-        "status": "absent",
+        "current_status": "absent",
+        "final_status": "absent",
         "last_seen": 0,
-        "lesson_key": None
+        "lesson_key": None,
+        "first_seen_during_lesson": None
     })
     
-    # Если урок сменился — сбрасываем состояние
+    # Смена урока — полный сброс
     if state["lesson_key"] != lesson_key:
-        state = {"status": "absent", "last_seen": 0, "lesson_key": lesson_key}
+        state = {
+            "current_status": "absent",
+            "final_status": "absent",
+            "last_seen": 0,
+            "lesson_key": lesson_key,
+            "first_seen_during_lesson": None
+        }
     
-    # Студент обнаружен сейчас
-    if current_lesson:  # Только во время урока отслеживаем left/present
-        if state["status"] in ["absent", "left"]:
-            new_status = "present"
-            print(f"→ {student_id} вернулся на урок")
-        else:
-            new_status = "present"
+    # Если сейчас идёт урок
+    if current_lesson:
+        start_time, end_time = current_lesson
         
+        # Первый раз видим на этом уроке — фиксируем опоздание
+        if state["first_seen_during_lesson"] is None:
+            if now.time() > start_time:  # Пришёл после начала
+                state["final_status"] = "late"
+                print(f"⚠ {student_id} опоздал на урок")
+            else:
+                state["final_status"] = "present"
+            state["first_seen_during_lesson"] = current_time
+        
+        # Обновляем текущее положение
+        state["current_status"] = "present"
         state["last_seen"] = current_time
-        state["status"] = new_status
-    else:
-        # Вне урока — не меняем статус
-        new_status = state["status"]
+        print(f"→ {student_id} присутствует (итоговый статус: {state['final_status']})")
     
     student_state[student_id] = state
-    return new_status
+    
+    # Возвращаем ТЕКУЩИЙ статус для отправки (present/left)
+    return state["current_status"], state["final_status"]
 
-async def check_absent_during_lesson():
-    """Фоновая задача: проверяет, кто пропал во время урока"""
+async def check_absent_during_lesson(session: aiohttp.ClientSession):
     while True:
-        await asyncio.sleep(10)  # Проверяем каждые 10 сек
+        await asyncio.sleep(10)
         
         now = datetime.now()
         weekday = now.weekday()
@@ -106,30 +132,34 @@ async def check_absent_during_lesson():
         current_lesson = get_current_lesson(weekday, cur_time)
         
         if not current_lesson:
-            continue  # Вне урока — ничего не делаем
+            await asyncio.sleep(10)
+            continue
         
         current_time = time.time()
         to_update = []
         
-        for student_id, state in student_state.items():
+        for sid, state in list(student_state.items()):
             if (state["lesson_key"] == current_lesson and
-                state["status"] == "present" and
+                state["current_status"] == "present" and
                 current_time - state["last_seen"] > STATE_TIMEOUT):
                 
-                state["status"] = "left"
-                to_update.append((student_id, "left", now.strftime("%H:%M:%S")))
-                print(f"← {student_id} вышел с урока")
+                state["current_status"] = "left"
+                print(f"← {sid} вышел с урока (итоговый: {state['final_status']})")
+                to_update.append((sid, "left", now.strftime("%H:%M:%S"), state["final_status"]))
         
-        # Отправляем обновления в FastAPI
-        if to_update:
-            async with aiohttp.ClientSession() as session:
-                for sid, status, t in to_update:
-                    payload = {"id": sid, "status": status, "time": t}
-                    try:
-                        async with session.post(FASTAPI_URL, json=payload):
-                            pass
-                    except:
-                        pass
+        # Отправляем в FastAPI
+        for sid, curr_status, t, final_status in to_update:
+            payload = {
+                "id": sid,
+                "status": curr_status,        # left
+                "time": t,
+                "final_status": final_status  # ← можно отправлять, если нужно в БД
+            }
+            try:
+                async with session.post(FASTAPI_URL, json=payload):
+                    print(payload)
+            except Exception as e:
+                print(f"except: {e}")
 
 def get_status_from_cache(cur_time: time, weekday: int) -> str:
     with cache_lock:
@@ -202,12 +232,40 @@ async def recognize_and_send(session: aiohttp.ClientSession):
                     cur_time = now.time().replace(microsecond=0)
                     
                     current_lesson = get_current_lesson(weekday, cur_time)
-                    status = update_student_status(name, now, current_lesson)
-                    
+                    current_status, final_status = update_student_status(name, now, current_lesson)
+
+                    if current_lesson:
+                        start_str = current_lesson[1].strftime("%H:%M:%S")
+                        end_str = current_lesson[2].strftime("%H:%M:%S")
+                        lesson_key = (weekday, (start_str, end_str)) # Или просто кортеж как строка
+                        schedule_id = current_lesson[0]
+                    else:
+                        lesson_key = None
+                        schedule_id = None
+
+                    time_str = now.strftime("%H:%M:%S")
+
+                    # Формируем payload с lesson_key
+                    payload = {
+                        "id": name,
+                        "status": current_status,           # present / left
+                        "time": time_str,
+                        "final_status": final_status,       # late / present / absent
+                        "lesson_key": lesson_key,          # ← Новый поле!
+                        "schedule_id": schedule_id
+                    }
+
+                    # Отправляем (с cooldown)
                     if name not in last_seen or time.time() - last_seen[name] > COOLDOWN_PER_PERSON:
-                        payload = {"id": name, "status": status, "time": time_str}
-                        async with session.post(FASTAPI_URL, json=payload):
-                            print(f"✅ {name} → {status} в {time_str}")
+                        try:
+                            async with session.post(FASTAPI_URL, json=payload) as resp:
+                                if resp.status == 200:
+                                    print(f"✅ Отправлено: {name} | {current_status} | урок: {lesson_key}")
+                                else:
+                                    print(f"Ошибка ответа: {resp.status}")
+                        except Exception as e:
+                            print(f"Не удалось отправить: {e}")
+    
                         last_seen[name] = time.time()
         except Exception as e:
             print(f"Ошибка: {e}")

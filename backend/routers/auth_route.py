@@ -33,5 +33,4 @@ async def get_current_user_info(current_user=Depends(utils.get_current_user)):
 
 @auth_router.post("/recognize", response_model=dict)
 async def recognize(data: dict):
-    return{"ok": True,
-           "data": data}
+    await users_models.accept_req(data)

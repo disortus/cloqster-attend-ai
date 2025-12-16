@@ -27,3 +27,13 @@ async def login_user(data: UserLogin):
             "role": user["role"]
         }
 
+async def accept_req(data: dict) -> dict:
+    async with database.pool.acquire() as conn:
+        lesson_id = await conn.fetchrow("""SELECT id FROM Lessons 
+                                     WHERE schedele_id = $1""", data["schedule_id"])
+        if not lesson_id:
+            raise HTTPException(400, "урок не найден")
+        mark_src = "system"
+        await conn.fetchrow("""INSERT INTO Attends (lesson_id, student_id, status, come_at, mark_source)
+                      VALUES ($1, $2, $3, $4, $5)""",lesson_id, data["id"], data["status"], data["time"], mark_src)
+        return {"ok": True}
