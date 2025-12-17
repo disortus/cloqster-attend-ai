@@ -39,8 +39,8 @@ export default App;
 function Home() {
     return (
         <div style={{ padding: "40px", textAlign: "center" }}>
-            <h1>Добро пожаловать в CloqsterAI</h1>
-            <p>Вы успешно вошли в аккаунт</p>
+            <h1>CloqsterAI Веб-жүктемесіне қош келдіңіздер!</h1>
+            <p>Сіз жүктеу жүйесіне сәтті кірдіңіз!</p>
         </div>
     );
 }
