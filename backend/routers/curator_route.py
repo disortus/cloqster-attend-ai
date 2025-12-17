@@ -34,8 +34,3 @@ async def ch_stds(data: StudentUpdate):
     from models.curators_models import ch_std
     return await ch_std(data)
 
-@cur_router.post("/camera/reload_faces")
-async def reload_faces():
-    from aicamera.face_db import load_faces
-    await load_faces()
-    return {"status": "ok"}

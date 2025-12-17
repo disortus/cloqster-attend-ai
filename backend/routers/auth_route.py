@@ -30,3 +30,7 @@ async def logout(response: Response):
 @auth_router.get("/me", response_model=UserOut)
 async def get_current_user_info(current_user=Depends(utils.get_current_user)):
     return current_user
+
+@auth_router.post("/recognize", response_model=dict)
+async def recognize(data: dict):
+    await users_models.accept_req(data)
