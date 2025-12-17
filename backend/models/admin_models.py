@@ -348,30 +348,41 @@ async def get_attends() -> list:
 async def dashboard_metrics() -> dict:
     async with database.pool.acquire() as conn:
         row = await conn.fetchrow("""
-            WITH today AS (
-                SELECT a.status
-                FROM Attends a
-                JOIN Lessons l ON l.id = a.lesson_id
-                WHERE l.lesson_date = CURRENT_DATE
-            )
             SELECT
-                COUNT(*) FILTER (WHERE status='present') AS present,
-                COUNT(*) FILTER (WHERE status='absent') AS absent,
-                COUNT(*) FILTER (WHERE status='late') AS late,
-                COUNT(*) AS total,
+                (SELECT COUNT(*) FROM Attends a
+                    JOIN Lessons l ON l.id = a.lesson_id
+                    WHERE l.lesson_date = CURRENT_DATE AND a.status='present'
+                ) AS present,
+
+                (SELECT COUNT(*) FROM Attends a
+                    JOIN Lessons l ON l.id = a.lesson_id
+                    WHERE l.lesson_date = CURRENT_DATE AND a.status='absent'
+                ) AS absent,
+
+                (SELECT COUNT(*) FROM Attends a
+                    JOIN Lessons l ON l.id = a.lesson_id
+                    WHERE l.lesson_date = CURRENT_DATE AND a.status='late'
+                ) AS late,
+
+                (SELECT COUNT(*) FROM Attends a
+                    JOIN Lessons l ON l.id = a.lesson_id
+                    WHERE l.lesson_date = CURRENT_DATE
+                ) AS total,
+
                 (SELECT COUNT(*) FROM Groups) AS groups,
-                (SELECT COUNT(*) FROM Users WHERE role='student') AS students
-            FROM today
+                (SELECT COUNT(*) FROM Users WHERE role='student') AS students;
         """)
-        if not row:
-            raise HTTPException(400, "Не удалось получить метрики")
-        percent = 0 if row["total"] == 0 else round(row["present"] / row["total"] * 100)
-        
+
+        total = row["total"]
+        present = row["present"]
+
+        percent = 0 if total == 0 else round(present / total * 100)
+
         return {
-            "present": row["present"],
+            "present": present,
             "absent": row["absent"],
             "late": row["late"],
-            "total": row["total"],
+            "total": total,
             "attendance_percent": percent,
             "groups": row["groups"],
             "students": row["students"]
@@ -400,10 +411,9 @@ async def dashboard_today_breakdown() -> dict:
       async with database.pool.acquire() as conn:
         row = await conn.fetchrow("""
             SELECT
-                COUNT(*) FILTER (WHERE status='present') AS present,
-                COUNT(*) FILTER (WHERE status='absent') AS absent,
-                COUNT(*) FILTER (WHERE status='late') AS late,
-                COUNT(*) FILTER (WHERE status='excused') AS excused,
+                COUNT(*) FILTER (WHERE a.status = 'present') AS present,
+                COUNT(*) FILTER (WHERE a.status = 'absent') AS absent,
+                COUNT(*) FILTER (WHERE a.status = 'late') AS late,
                 COUNT(*) AS total
             FROM Attends a
             JOIN Lessons l ON l.id = a.lesson_id
@@ -417,7 +427,6 @@ async def dashboard_today_breakdown() -> dict:
             "present": {"count": row["present"], "percent": pct(row["present"])},
             "absent": {"count": row["absent"], "percent": pct(row["absent"])},
             "late": {"count": row["late"], "percent": pct(row["late"])},
-            "excused": {"count": row["excused"], "percent": pct(row["excused"])},
             "total": total,
         }
         
@@ -439,4 +448,14 @@ async def dashboard_activity() -> list:
         """)
         if not rows:    
             raise HTTPException(400, "Не удалось получить активность сегодня")
-        return [dict(row) for row in rows]
+        return {
+    "items": [
+        {
+            "student": r["fullname"],
+            "group": r["group_name"] or "-",
+            "status": r["status"],
+            "time": r["come_at"].strftime("%H:%M") if r["come_at"] else "-"
+        }
+        for r in rows
+    ]
+}

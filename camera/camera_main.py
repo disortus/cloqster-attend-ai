@@ -45,7 +45,7 @@ async def load_schedule():
     global schedule_cache
     async with database.pool.acquire() as conn:
         rows = await conn.fetch("SELECT id, weekday, start_time, end_time FROM Schedules ORDER BY weekday, start_time")
-        rows2 = await conn.fetch("SELECT id FROM Lessons WHERE schedule_id = $1 AND ")
+        # rows2 = await conn.fetch("SELECT id FROM Lessons WHERE schedule_id = $1 AND ")
     
     new_cache = {}
     for row in rows:
