@@ -18,11 +18,11 @@
     list-style: none;
     display: flex;
     gap: 10px;
-    font-family: Inter Medium;
+    font-weight: 500;
 }
 
 .site-title{
-    font-family: Inter Extrabold;
+    font-weight: bolder;
     font-size: 24px;
     color: #065FCB;
 }

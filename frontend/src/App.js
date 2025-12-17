@@ -2,6 +2,8 @@ import Navbar from "./components/Navbar/Navbar";
 import LoginForm from "./components/LoginForm/LoginForm";
 import RegisterForm from "./components/RegisterForm/RegisterForm";
 import { Route, Routes, Navigate } from "react-router-dom";
+import AdminPanel from "./components/AdminPanel/AdminPanel";
+
 
 function App() {
     return (
@@ -20,7 +22,8 @@ function App() {
                     {/* Если пользователь перейдёт на /home — редирект на / */}
                     <Route path="/home" element={<Navigate to="/" replace />} />
 
-                    <Route path="/admin" element={<div>Admin panel</div>} />
+                    <Route path="/admin" element={<AdminPanel />} />
+
 
                     {/* На любые неизвестные роуты */}
                     <Route path="*" element={<Navigate to="/" replace />} />

@@ -8,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './components/Navbar/Dropdown.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 
+
 import { AuthProvider } from "./auth/AuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
