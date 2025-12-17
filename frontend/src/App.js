@@ -3,6 +3,7 @@ import LoginForm from "./components/LoginForm/LoginForm";
 import RegisterForm from "./components/RegisterForm/RegisterForm";
 import { Route, Routes, Navigate } from "react-router-dom";
 import AdminPanel from "./components/AdminPanel/AdminPanel";
+import HowItWorks from "./components/HowItsWork/HowItWorks";
 
 
 function App() {
@@ -18,6 +19,9 @@ function App() {
                     {/* Логин / регистрация */}
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/register" element={<RegisterForm />} />
+
+                    {/* Как это работает ) */}
+                    <Route path="/how-it-works" element={<HowItWorks />} />
 
                     {/* Если пользователь перейдёт на /home — редирект на / */}
                     <Route path="/home" element={<Navigate to="/" replace />} />
