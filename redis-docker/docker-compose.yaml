@@ -1,0 +1,15 @@
+version: '3.8'  # Лучше 3.8 для совместимости
+
+services:
+  redis:
+    image: redis:7-alpine  # alpine — легче и безопаснее
+    container_name: project-redis
+    ports:
+      - "6379:6379"  # Доступ с хоста
+    volumes:
+      - redis-data:/data  # Данные не потеряются при перезапуске
+    command: redis-server --requirepass new_pass125  # Опционально: пароль (замени!)
+    restart: unless-stopped  # Автоматический перезапуск при падении
+
+volumes:
+  redis-data:  # Named volume для persistence
