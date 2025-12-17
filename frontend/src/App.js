@@ -21,7 +21,7 @@ function App() {
                     <Route path="/register" element={<RegisterForm />} />
 
                     {/* Как это работает ) */}
-                    <Route path="/how-it-works" element={<HowItWorks />} />
+                    <Route path="/how-it-workS" element={<HowItWorks />} />
 
                     {/* Если пользователь перейдёт на /home — редирект на / */}
                     <Route path="/home" element={<Navigate to="/" replace />} />
