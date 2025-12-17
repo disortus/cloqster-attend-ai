@@ -403,7 +403,6 @@ async def dashboard_today_breakdown() -> dict:
                 COUNT(*) FILTER (WHERE status='present') AS present,
                 COUNT(*) FILTER (WHERE status='absent') AS absent,
                 COUNT(*) FILTER (WHERE status='late') AS late,
-                COUNT(*) FILTER (WHERE status='excused') AS excused,
                 COUNT(*) AS total
             FROM Attends a
             JOIN Lessons l ON l.id = a.lesson_id
