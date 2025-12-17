@@ -4,7 +4,8 @@ import RegisterForm from "./components/RegisterForm/RegisterForm";
 import { Route, Routes, Navigate } from "react-router-dom";
 import AdminPanel from "./components/AdminPanel/AdminPanel";
 import HowItWorks from "./components/HowItsWork/HowItWorks";
-
+import Home from "./components/Home/Home";
+import StudentPanel from './components/StudentPanel/StudentPanel';
 
 function App() {
     return (
@@ -14,7 +15,10 @@ function App() {
             <div className="container">
                 <Routes>
                     {/* Главная страница */}
-                    <Route path="/" element={<Home />} />
+                    <Route path="/Home" element={<Home />} />
+
+                    <Route path="/student" element={<StudentPanel />} />
+                    <Route path="/mark" element={<StudentPanel />} /> 
 
                     {/* Логин / регистрация */}
                     <Route path="/login" element={<LoginForm />} />
@@ -37,14 +41,4 @@ function App() {
     );
 }
 
-export default App;
-
-/* ВРЕМЕННАЯ главная страница */
-function Home() {
-    return (
-        <div style={{ padding: "40px", textAlign: "center" }}>
-            <h1>CloqsterAI Веб-жүктемесіне қош келдіңіздер!</h1>
-            <p>Сіз жүктеу жүйесіне сәтті кірдіңіз!</p>
-        </div>
-    );
-}
+export default App; 
