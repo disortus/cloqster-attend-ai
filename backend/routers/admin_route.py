@@ -9,8 +9,8 @@ from auth.utils import require_role
 
 admin_router = APIRouter(
     prefix="/admin",
-    tags=["Admin"],
-    dependencies=[Depends(require_role("admin"))]
+    tags=["Admin"]
+    # dependencies=[Depends(require_role("admin"))]
 )
 
 @admin_router.get("")
