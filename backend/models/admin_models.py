@@ -379,13 +379,12 @@ async def dashboard_metrics() -> dict:
         percent = 0 if total == 0 else round(present / total * 100)
 
         return {
-            "present": present,
-            "absent": row["absent"],
-            "late": row["late"],
-            "total": total,
+            "today_present": row["present"],
+            "today_absent": row["absent"],
+            "today_late": row["late"],
             "attendance_percent": percent,
-            "groups": row["groups"],
-            "students": row["students"]
+            "groups_count": row["groups"],
+            "students_count": row["students"]
         }
 
 async def dashboard_trend() -> list:
@@ -424,10 +423,9 @@ async def dashboard_today_breakdown() -> dict:
         total = row["total"] or 0
         pct = lambda x: 0 if total == 0 else round(x / total * 100)
         return {
-            "present": {"count": row["present"], "percent": pct(row["present"])},
-            "absent": {"count": row["absent"], "percent": pct(row["absent"])},
-            "late": {"count": row["late"], "percent": pct(row["late"])},
-            "total": total,
+            "present": pct(row["present"]),
+            "absent": pct(row["absent"]),
+            "late": pct(row["late"])
         }
         
 async def dashboard_activity() -> list:

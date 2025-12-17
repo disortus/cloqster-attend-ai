@@ -104,8 +104,7 @@ export default function AdminDashboard() {
     const pieData = [
         { name: "Келді", value: safeBreakdown.present },
         { name: "Қатыспады", value: safeBreakdown.absent },
-        { name: "Кешікті", value: safeBreakdown.late },
-        { name: "Себепті", value: safeBreakdown.excused },
+        { name: "Кешікті", value: safeBreakdown.late }
     ];
 
     const colors = ["#22c55e", "#ef4444", "#f59e0b", "#6366f1"];
