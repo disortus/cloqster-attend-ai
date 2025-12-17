@@ -7,6 +7,9 @@ import "./components/Navbar/Navbar.css";
 import { BrowserRouter } from 'react-router-dom';
 import './components/Navbar/Dropdown.css';
 import "bootstrap/dist/css/bootstrap.min.css";
+import "@fontsource-variable/inter";
+import "./index.css";
+
 
 import { AuthProvider } from "./auth/AuthContext";
 
