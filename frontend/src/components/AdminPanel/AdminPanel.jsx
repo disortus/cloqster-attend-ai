@@ -118,7 +118,7 @@ export default function AdminDashboard() {
                 <Card title="Бүгін келгендер" value={safeStats.present} />
                 <Card title="Қатыспағандар" value={safeStats.absent} />
                 <Card title="Кешіккендер" value={safeStats.late} />
-                <Card title="Қатысу %" value={`${safeStats.attendance_percent}%`} />
+                <Card title="Қатысу пайызы %" value={`${safeStats.attendance_percent}%`} />
                 <Card title="Топтар" value={safeStats.groups} />
                 <Card title="Студенттер" value={safeStats.students} />
             </div>
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="ad-box">
-                    <h3>Бүгінгі қатысу</h3>
+                    <h3>Бүгін қатысқандар:</h3>
 
                     <ResponsiveContainer width="100%" height={260}>
                         <PieChart>
