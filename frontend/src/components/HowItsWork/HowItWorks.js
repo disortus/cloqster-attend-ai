@@ -40,7 +40,7 @@ const HowItWorks = () => {
         <div className="step" data-step="3">
           <div className="step-number">3</div>
           <div className="step-content">
-            <h3 className="step-title">Уақыттыңда келгеніңізді/кешіккеніңізді анықтайды</h3>
+            <h3 className="step-title">Уақытыңда келгеніңізді/кешіккеніңізді анықтайды</h3>
             <p className="step-desc">Бәрін жеке студент панелінде көре аласыз!</p>
           </div>
           <div className="check-icon">✔</div>
