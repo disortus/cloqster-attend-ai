@@ -162,7 +162,7 @@ async def performance_report() -> dict:
     from models.admin_models import dashboard_today_breakdown
     return await dashboard_today_breakdown()
 
-@admin_router.get("/dashbord_overview", response_model=list)
-async def dashboard_overview() -> list:
+@admin_router.get("/dashbord_overview", response_model=dict)
+async def dashboard_overview() -> dict:
     from models.admin_models import dashboard_activity
     return await dashboard_activity()

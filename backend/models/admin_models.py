@@ -428,7 +428,7 @@ async def dashboard_today_breakdown() -> dict:
             "late": pct(row["late"])
         }
         
-async def dashboard_activity() -> list:
+async def dashboard_activity() -> dict:
     async with database.pool.acquire() as conn:
         rows = await conn.fetch("""
             SELECT
