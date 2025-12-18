@@ -5,7 +5,7 @@ from databases.postgres import database
 from auth.utils import create_token
 
 
-async def login_user(data: UserLogin):
+async def login_user(data: UserLogin) -> dict:
     async with database.pool.acquire() as conn:
         user = await conn.fetchrow("""
             SELECT id, email, password, role, fullname
@@ -37,3 +37,9 @@ async def accept_req(data: dict) -> dict:
         await conn.fetchrow("""INSERT INTO Attends (lesson_id, student_id, status, come_at, mark_source)
                       VALUES ($1, $2, $3, $4, $5)""",lesson_id, data["id"], data["status"], data["time"], mark_src)
         return {"ok": True}
+
+async def upd_req(data: dict) -> dict:
+    async with database.pool.acquire() as conn:
+        lesson_id = await conn.fetchrow("""UPDATE Attends SET status = $1
+                                        WHERE status = $2 AND student_id = $3""", 
+                                        data["status"], data["final_status"], data["id"])

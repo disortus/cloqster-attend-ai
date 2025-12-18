@@ -1,8 +1,12 @@
 import Navbar from "./components/Navbar/Navbar";
 import LoginForm from "./components/LoginForm/LoginForm";
-import RegisterForm from "./components/RegisterForm/RegisterForm";
 import { Route, Routes, Navigate } from "react-router-dom";
 import AdminPanel from "./components/AdminPanel/AdminPanel";
+import HowItWorks from "./components/HowItsWork/HowItWorks";
+import Home from "./components/Home/Home";
+import Otmetka from "./components/otmetka/otmetka";
+import AttendanceHistory from './components/AttendanceHistory/AttendanceHistory';
+import Features from './components/Features/Features';
 
 
 function App() {
@@ -13,11 +17,20 @@ function App() {
             <div className="container">
                 <Routes>
                     {/* Главная страница */}
-                    <Route path="/" element={<Home />} />
+                    <Route path="/Home" element={<Home />} />
+
+                    <Route path="/features" element={<Features />} />
+
+                    <Route path="/mark" element={<Otmetka />} />
+
+                    <Route path="/history" element={<AttendanceHistory />} />
 
                     {/* Логин / регистрация */}
                     <Route path="/login" element={<LoginForm />} />
-                    <Route path="/register" element={<RegisterForm />} />
+                
+
+                    {/* Как это работает ) */}
+                    <Route path="/how-it-workS" element={<HowItWorks />} />
 
                     {/* Если пользователь перейдёт на /home — редирект на / */}
                     <Route path="/home" element={<Navigate to="/" replace />} />
@@ -33,14 +46,4 @@ function App() {
     );
 }
 
-export default App;
-
-/* ВРЕМЕННАЯ главная страница */
-function Home() {
-    return (
-        <div style={{ padding: "40px", textAlign: "center" }}>
-            <h1>Добро пожаловать в CloqsterAI</h1>
-            <p>Вы успешно вошли в аккаунт</p>
-        </div>
-    );
-}
+export default App; 

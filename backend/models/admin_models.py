@@ -130,7 +130,7 @@ async def add_std_to_group(data: StdGroup) -> dict:
 async def get_std_in_group() -> list:
     async with database.pool.acquire() as conn:
         students = await conn.fetch(
-            "SELECT Users.fullname,                                                                                                                                                                                                                                                                                                               Groups.group_name FROM Students_Groups "
+            "SELECT Users.fullname, Groups.group_name                                                                                                                                                                                                                                                                                                               Groups.group_name FROM Students_Groups "
             "JOIN Users ON Students_Groups.student_id = Users.id "
             "JOIN Groups ON Students_Groups.group_id = Groups.id "
         )
@@ -257,7 +257,7 @@ async def add_subject(data: Subject) -> dict:
             if not spec:
                 raise HTTPException(400, "Специальность не найдена")
             await conn.fetchrow(
-                "INSERT INTO Subjects (subj_name, spec_id) VALUES ($1, $2)",
+                "INSERT INTO Subjects (subj_name, scep_id) VALUES ($1, $2)",
                 data.subj_name, spec["id"]
             )
             return {"ok": True}

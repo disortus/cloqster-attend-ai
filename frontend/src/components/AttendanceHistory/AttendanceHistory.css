@@ -1,0 +1,60 @@
+.history-panel {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.history-title {
+  font-size: 32px;
+  text-align: center;
+  color: #007bff;
+  margin-bottom: 30px;
+}
+
+.history-table-container {
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.history-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.green {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.orange {
+  color: #fd7e14;
+  font-weight: bold;
+}
+
+.red {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+  .history-table th, .history-table td {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
