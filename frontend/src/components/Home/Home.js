@@ -120,7 +120,6 @@ const Home = () => {
       <section className="cta-section">
         <h2 className="cta-title">Байланысу.</h2>
         <div className="cta-buttons">
-          <Link to="/register" className="btn-light">Акысыз Тіркелу</Link>
           <a href="mailto:support@cloqster.ai" className="btn-blue">Бізге Хабарласыңыз</a>
         </div>
       </section>

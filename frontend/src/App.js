@@ -1,11 +1,11 @@
 import Navbar from "./components/Navbar/Navbar";
 import LoginForm from "./components/LoginForm/LoginForm";
-import RegisterForm from "./components/RegisterForm/RegisterForm";
 import { Route, Routes, Navigate } from "react-router-dom";
 import AdminPanel from "./components/AdminPanel/AdminPanel";
 import HowItWorks from "./components/HowItsWork/HowItWorks";
 import Home from "./components/Home/Home";
-import StudentPanel from './components/StudentPanel/StudentPanel';
+import Otmetka from "./components/otmetka/otmetka";
+
 
 function App() {
     return (
@@ -17,12 +17,11 @@ function App() {
                     {/* Главная страница */}
                     <Route path="/Home" element={<Home />} />
 
-                    <Route path="/student" element={<StudentPanel />} />
-                    <Route path="/mark" element={<StudentPanel />} /> 
+                    <Route path="/mark" element={<Otmetka />} />
 
                     {/* Логин / регистрация */}
                     <Route path="/login" element={<LoginForm />} />
-                    <Route path="/register" element={<RegisterForm />} />
+                
 
                     {/* Как это работает ) */}
                     <Route path="/how-it-workS" element={<HowItWorks />} />
