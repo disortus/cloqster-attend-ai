@@ -57,6 +57,11 @@ async def get_admins() -> list:
     from models.admin_models import get_admin
     return await get_admin()
 
+@admin_router.get("/get_users", response_model=list)
+async def get_us() -> list:
+    from models.admin_models import get_users
+    return await get_users() 
+
 @admin_router.post("/add_std_to_group", response_model=dict)
 async def add_std_to_groups(data: StdGroup) -> dict:
     from models.admin_models import add_std_to_group
