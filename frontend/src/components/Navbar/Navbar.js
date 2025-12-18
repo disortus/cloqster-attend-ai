@@ -40,7 +40,7 @@ function Navbar() {
 
             <ul>
                 <li><Link to="/how-it-works" className="top">Қалай жұмыс істейді</Link></li>
-                <li><Link to="/functions" className="top">Мүмкіндіктер</Link></li>
+                <li><Link to="/features" className="top">Мүмкіндіктер</Link></li>
                 <li><Link to="/Mark" className="top">Белгі қою</Link></li>
                 <li><Link to="/history" className="top">Тарихы</Link></li>
             </ul>

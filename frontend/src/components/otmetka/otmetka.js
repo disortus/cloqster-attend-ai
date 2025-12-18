@@ -87,6 +87,7 @@ const Otmetka = () => {
       {/* История посещений */}
       <div className="history-section">
         <h2>Соңғы белгілер</h2>
+        <Link to="/history">Тарихты көру</Link>
         <div className="table-container">
           <table className="history-table">
             <thead>

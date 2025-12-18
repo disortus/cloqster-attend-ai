@@ -5,6 +5,8 @@ import AdminPanel from "./components/AdminPanel/AdminPanel";
 import HowItWorks from "./components/HowItsWork/HowItWorks";
 import Home from "./components/Home/Home";
 import Otmetka from "./components/otmetka/otmetka";
+import AttendanceHistory from './components/AttendanceHistory/AttendanceHistory';
+import Features from './components/Features/Features';
 
 
 function App() {
@@ -17,7 +19,11 @@ function App() {
                     {/* Главная страница */}
                     <Route path="/Home" element={<Home />} />
 
+                    <Route path="/features" element={<Features />} />
+
                     <Route path="/mark" element={<Otmetka />} />
+
+                    <Route path="/history" element={<AttendanceHistory />} />
 
                     {/* Логин / регистрация */}
                     <Route path="/login" element={<LoginForm />} />

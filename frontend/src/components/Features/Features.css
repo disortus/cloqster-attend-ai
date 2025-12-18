@@ -1,0 +1,139 @@
+.features-page {
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding: 80px 20px 60px;
+}
+
+.features-hero {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.features-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+  position: relative;
+  display: inline-block;
+}
+
+.features-title::after {
+  content: '';
+  display: block;
+  width: 60%;
+  height: 4px;
+  background: #007bff;
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+.features-subtitle {
+  font-size: 20px;
+  color: #666;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.features-grid-section {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+}
+
+.feature-card {
+  background: white;
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 123, 255, 0.1);
+  text-align: left;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 123, 255, 0.15);
+}
+
+.feature-icon {
+  font-size: 48px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  background: rgba(0, 123, 255, 0.1);
+  border-radius: 50%;
+  color: #007bff;
+}
+
+.feature-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.feature-desc {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Анимация появления карточек */
+.feature-card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+  animation-delay: calc(0.1s * var(--index));
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .features-title {
+    font-size: 36px;
+  }
+  .features-subtitle {
+    font-size: 18px;
+  }
+  .feature-card {
+    padding: 24px;
+  }
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 36px;
+  }
+}
+
+/* Нумеруем карточки для анимации */
+.features-grid {
+  --index: 0;
+}
+
+.feature-card:nth-child(1) { --index: 1; }
+.feature-card:nth-child(2) { --index: 2; }
+.feature-card:nth-child(3) { --index: 3; }
+.feature-card:nth-child(4) { --index: 4; }
+.feature-card:nth-child(5) { --index: 5; }
+.feature-card:nth-child(6) { --index: 6; }
+.feature-card:nth-child(7) { --index: 7; }
+.feature-card:nth-child(8) { --index: 8; }
+.feature-card:nth-child(9) { --index: 9; }
+.feature-card:nth-child(10) { --index: 10; }
+.feature-card:nth-child(11) { --index: 11; }

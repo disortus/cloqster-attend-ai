@@ -257,7 +257,7 @@ async def add_subject(data: Subject) -> dict:
             if not spec:
                 raise HTTPException(400, "Специальность не найдена")
             await conn.fetchrow(
-                "INSERT INTO Subjects (subj_name, spec_id) VALUES ($1, $2)",
+                "INSERT INTO Subjects (subj_name, scep_id) VALUES ($1, $2)",
                 data.subj_name, spec["id"]
             )
             return {"ok": True}
