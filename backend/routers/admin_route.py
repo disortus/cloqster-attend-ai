@@ -18,7 +18,7 @@ async def admin_panel(user=Depends(require_role("admin"))):
     return {"msg": "admin access", "user": user}
 
 @admin_router.get("/specs")
-async def fetch_specs():
+async def fetch_specs() -> list:
     from models.admin_models import get_specs
     return await get_specs()
 

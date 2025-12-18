@@ -130,7 +130,7 @@ async def add_std_to_group(data: StdGroup) -> dict:
 async def get_std_in_group() -> list:
     async with database.pool.acquire() as conn:
         students = await conn.fetch(
-            "SELECT Users.fullname,                                                                                                                                                                                                                                                                                                               Groups.group_name FROM Students_Groups "
+            "SELECT Users.fullname, Groups.group_name                                                                                                                                                                                                                                                                                                               Groups.group_name FROM Students_Groups "
             "JOIN Users ON Students_Groups.student_id = Users.id "
             "JOIN Groups ON Students_Groups.group_id = Groups.id "
         )

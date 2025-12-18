@@ -51,7 +51,9 @@ async def get_std(data: UserName) -> list:
         if not group:
             raise HTTPException(400, "Куратор не назначен ни в одну группу")
         stds = await conn.fetch(
-            "SELECT Users.fullname, Groups.group_name FROM Students_Groups WHERE group_id = $1", group["id"]
+            """SELECT Users.fullname, Groups.group_name FROM Students_Groups WHERE group_id = $1
+            JOIN Users on Students_Groups.user_id = Users.id
+            JOIN Groups on Students_Groups.group_id = Groups.id""", group["id"]
         )
         return [dict(std) for std in stds]
     
