@@ -457,3 +457,8 @@ async def dashboard_activity() -> list:
         for r in rows
     ]
 }
+        
+async def get_users() -> dict:
+    async with database.pool.acquire() as conn:
+        rows = conn.fetch("SELECT id, email, fullname, role FROM Users ORDER BY id")
+        return [dict(r) for r in rows] if rows else []
