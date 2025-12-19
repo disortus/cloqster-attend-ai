@@ -29,9 +29,14 @@ function Navbar() {
         navigate("/login");
     };
 
+    const goCurator = () => {
+        setOpen(false);
+        navigate("/curator");
+    };
+
     const goAdmin = () => {
         setOpen(false);
-        navigate("/admin"); // сделай роут /admin в App.js
+        navigate("/admin");
     };
 
     return (
@@ -104,7 +109,7 @@ function Navbar() {
 
                                     {user.role === "curator" && (
                                         <button
-                                            onClick={goAdmin}
+                                            onClick={goCurator}
                                             style={{
                                                 width: "100%",
                                                 textAlign: "left",
