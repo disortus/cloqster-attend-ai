@@ -1,25 +1,54 @@
 from databases.postgres import database
 from fastapi import HTTPException
-from schemas.users_sch import UserName
 
-async def get_schedule(data: UserName) -> dict:
+
+async def get_schedule_for_student(student_id: int) -> list:
     async with database.pool.acquire() as conn:
-        student_id = await conn.fetchrow("SELECT id FROM Users WHERE fullname = $1 AND role = 'student'", data.fullname)
-        if not student_id:
-            raise HTTPException(400, "студент не найден")
-        group_id = await conn.fetchrow("SELECT group_id FROM Students_Groups WHERE student_id = $1", student_id)
+
+        # Проверяем, что студент существует и является студентом
+        user = await conn.fetchrow("""
+            SELECT id, role 
+            FROM Users
+            WHERE id = $1
+        """, student_id)
+
+        if not user or user["role"] != "student":
+            raise HTTPException(403, "Только студент может просматривать расписание")
+
+        # Находим группу студента
+        group_id = await conn.fetchrow("""
+            SELECT group_id 
+            FROM Students_Groups 
+            WHERE student_id = $1
+        """, student_id)
+
         if not group_id:
-            raise HTTPException(400, "группа не найдена")
-        schedule = await conn.fetch("""SELECT Groups.group_name, Schedules.weekday, Schedules.start_time, Schedules.end_time, 
-            Subjects.subj_name, Users.fullname AS teacher_fullname, Audience.aud_number, 
-            Schedules.valid_from, Schedules.valid_to 
-            FROM Schedules
-            WHERE group_id = $1
-            JOIN Groups ON Schedules.group_id = Groups.id
-            JOIN Users ON Schedules.teacher_id = Users.id
-            JOIN Subjects ON Schedules.subj_id = Subjects.id 
-            JOIN Audience ON Schedules.aud_id = Audience.id""", group_id)
+            raise HTTPException(404, "Группа студента не найдена")
+
+        group_id = group_id["group_id"]
+
+        # Получаем расписание
+        schedule = await conn.fetch("""
+            SELECT 
+                g.group_name,
+                s.weekday,
+                s.start_time,
+                s.end_time,
+                subj.subj_name,
+                u.fullname AS teacher_fullname,
+                a.aud_number,
+                s.valid_from,
+                s.valid_to
+            FROM Schedules s
+            JOIN Groups g ON s.group_id = g.id
+            JOIN Users u ON s.teacher_id = u.id
+            JOIN Subjects subj ON s.subj_id = subj.id
+            JOIN Audience a ON s.aud_id = a.id
+            WHERE s.group_id = $1
+            ORDER BY s.weekday, s.start_time
+        """, group_id)
+
         if not schedule:
-            raise HTTPException(400, "Расписания не найдены")
-        return [dict(sch) for sch in schedule]
-    
+            raise HTTPException(404, "Расписание отсутствует")
+
+        return [dict(row) for row in schedule]

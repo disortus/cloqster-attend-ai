@@ -21,3 +21,8 @@ async def update_attend(lesson_id: int, student_id: int, status: str, user=Depen
         status=status,
         teacher_id=user["id"]
     )
+
+@teach_router.get("/get_lessons")
+async def get_less():
+    from models.teacher_models import get_lessons
+    return await get_lessons()
