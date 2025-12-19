@@ -3,7 +3,7 @@ from auth.security import verify_password
 from fastapi import HTTPException
 from databases.postgres import database
 from auth.utils import create_token
-from ws.attends_ws import broadcast
+
 
 async def login_user(data: UserLogin) -> dict:
     async with database.pool.acquire() as conn:

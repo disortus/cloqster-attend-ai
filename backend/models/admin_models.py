@@ -510,6 +510,6 @@ async def admin_update_attend(admin_id: int, attend_id: int, new_status: str):
             "admin_id": admin_id
         }
 
-        await publish_attend(event)
+        await publish_attend(event, channel="admin")
 
         return {"ok": True}

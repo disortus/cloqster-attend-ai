@@ -144,6 +144,12 @@ async def curator_update_attend(curator_id: int, attend_id: int, new_status: str
             "curator_id": curator_id
         }
 
-        await publish_attend(event)
+        await publish_attend(
+            event,
+            channel=f"group_{attend['group_id']}"
+        )
+
+
+
 
         return {"ok": True}
