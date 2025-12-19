@@ -7,8 +7,8 @@ import json
 
 cur_router = APIRouter(
     prefix="/curator",
-    tags=["Curator"],
-    dependencies=[Depends(require_role("curator"))]
+    tags=["Curator"]
+    # dependencies=[Depends(require_role("curator"))]
 )
 
 @cur_router.get("")

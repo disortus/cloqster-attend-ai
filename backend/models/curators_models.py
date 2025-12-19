@@ -27,16 +27,11 @@ async def add_face(student_id: int, img: bytes = File(...)) -> dict:
                     f.write(img)
 
                 # деактивируем старое лицо (если было)
-                await conn.execute("""
-                    update Faces
-                    set is_active = false
-                    where student_id = $1
-                """, student_id)
 
                 # вставляем новое
                 await conn.execute("""
-                    insert into Faces (student_id, img_path, is_active)
-                    values ($1, $2, true)
+                    insert into Faces (student_id, img_path)
+                    values ($1, $2)
                 """, student_id, str(img_path))
             except Exception as e:
                 print(e)

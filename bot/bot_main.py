@@ -1,6 +1,6 @@
 from aiogram import Bot, Dispatcher
 from postgres import database
-from bot.handlers.deadlines import notify_curator
+from handlers.deadlines import notify_curator
 from redis.asyncio import Redis
 from sqlites import init_db
 import asyncio

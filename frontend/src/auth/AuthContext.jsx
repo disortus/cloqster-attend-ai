@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loadingAuth, setLoadingAuth] = useState(true);
 
-    // восстановление сессии при обновлении страницы
+   
     useEffect(() => {
         (async () => {
             try {
@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
 
                 if (res.ok) {
                     const data = await res.json();
-                    setUser(data.user ?? data); // поддержка обоих форматов
+                    setUser(data.user ?? data); 
                 } else {
                     setUser(null);
                 }
