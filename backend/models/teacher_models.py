@@ -1,6 +1,5 @@
 from databases.postgres import database
 from fastapi import HTTPException
-from ws.attends_ws import broadcast
 from ws.redis_pubsub import publish_attend
 
 async def get_attends_for_lesson(teacher_id: int, lesson_id: int):
@@ -52,7 +51,10 @@ async def teacher_update_attend(teacher_id: int, attend_id: int, new_status: str
             "teacher_id": teacher_id
         }
 
-        await publish_attend(event)
+        await publish_attend(
+            event,
+            channel=f"lesson_{attend['lesson_id']}"
+        )
 
         return {"ok": True}
 
