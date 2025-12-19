@@ -1,5 +1,5 @@
 from datetime import datetime
-from redis.publisher import publish_event
+from rediser.publisher import publish_event
 from models.attend_models import get_absents_and_lates
 
 async def notify_deadline_passed(lesson_id: int, run_at: datetime):
