@@ -4,6 +4,7 @@ from bot.handlers.deadline import notify_curator
 from redis.asyncio import Redis
 from sqlites import init_db
 import asyncio
+import json
 
 bot = Bot(token='8570799657:AAFYUAdPkpKEGbkyknmHn9qkdrhVamtzoh4')
 dispatcher = Dispatcher()
