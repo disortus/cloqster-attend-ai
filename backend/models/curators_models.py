@@ -97,7 +97,7 @@ async def get_group_attends(curator_group_id: int):
     async with database.pool.acquire() as conn:
 
         attends = await conn.fetch("""
-            SELECT A.id, A.student_id, A.status, A.come_at, A.mark_source,
+            SELECT A.id, A.student_id, U.fullname A.status, A.come_at, A.mark_source,
                    S.group_id, U.fullname AS student_name
             FROM Attends A
             JOIN Lessons L ON A.lesson_id = L.id
