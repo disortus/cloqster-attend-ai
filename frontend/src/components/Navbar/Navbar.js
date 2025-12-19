@@ -98,7 +98,64 @@ function Navbar() {
                                             onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.06)")}
                                             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                                         >
-                                            Админ панель
+                                            Басқару тақтасы
+                                        </button>
+                                    )}
+
+                                    {user.role === "curator" && (
+                                        <button
+                                            onClick={goAdmin}
+                                            style={{
+                                                width: "100%",
+                                                textAlign: "left",
+                                                padding: "10px",
+                                                border: "none",
+                                                background: "transparent",
+                                                cursor: "pointer",
+                                                borderRadius: 8,
+                                            }}
+                                            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.06)")}
+                                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                                        >
+                                            Кураторлар тақтасы
+                                        </button>
+                                    )}
+
+                                    {user.role === "student" && (
+                                        <button
+                                            onClick={goAdmin}
+                                            style={{
+                                                width: "100%",
+                                                textAlign: "left",
+                                                padding: "10px",
+                                                border: "none",
+                                                background: "transparent",
+                                                cursor: "pointer",
+                                                borderRadius: 8,
+                                            }}
+                                            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.06)")}
+                                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                                        >
+                                            Оқушылар панелі
+                                        </button>
+                                    )}
+
+                                    {user.role === "teacher" && (
+                                        <button
+                                            onClick={goAdmin}
+                                            style={{
+                                                width: "100%",
+                                                textAlign: "left",
+                                                padding: "10px",
+                                                border: "none",
+                                                background: "transparent",
+                                                cursor: "pointer",
+                                                borderRadius: 8,
+                                            }}
+                                            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.06)")}
+                                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                                        >
+                                            Мұғалімдер тақтасы
                                         </button>
                                     )}
 
@@ -116,7 +173,7 @@ function Navbar() {
                                         onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.06)")}
                                         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                                     >
-                                        Выход
+                                        Шығу
                                     </button>
                                 </div>
                             )}
