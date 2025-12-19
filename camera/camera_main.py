@@ -123,10 +123,18 @@ async def recognize_and_send(session: aiohttp.ClientSession):
 
         loop = asyncio.get_running_loop()
         try:
+            frame_small = cv2.resize(latest_frame, (320, 240))
+            frame_rgb = cv2.cvtColor(frame_small, cv2.COLOR_BGR2RGB)
+
             results = await loop.run_in_executor(
                 executor,
                 DeepFace.find,
-                frame_copy, str(IMGS_PATH), False, True, "ArcFace", "cosine"
+                frame_rgb,
+                str(IMGS_PATH),
+                False,  # enforce_detection=False для теста
+                True,
+                "ArcFace",
+                "cosine"
             )
             if results and len(results) > 0 and len(results[0]) > 0:
                 best = results[0].iloc[0]
