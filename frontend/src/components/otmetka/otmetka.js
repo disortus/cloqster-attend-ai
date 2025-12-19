@@ -3,18 +3,18 @@ import { Link } from 'react-router-dom';
 import './otmetka.css';
 
 const Otmetka = () => {
-  // Данные студента (потом можно из контекста или бэка брать)
+  
   const studentName = "Алигожин Ерасыл";
 
-  // Текущий статус и время (заглушка)
-  const currentStatus = "Келді"; // Можно динамически менять
+  
+  const currentStatus = "Келді"; 
   const currentTime = new Date().toLocaleTimeString('kk-KZ', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit'
   });
 
-  // История посещений (заглушка)
+  
   const attendanceHistory = [
     { date: '2025-12-18', timeIn: '08:45', timeOut: '17:30', status: 'Келді' },
     { date: '2025-12-17', timeIn: '09:05', timeOut: '17:20', status: 'Кешікті' },
@@ -71,8 +71,8 @@ const Otmetka = () => {
             <h2>Белгі қою</h2>
             <div className="camera-placeholder">
               <p role="img" aria-label="camera">📷</p>
-              <p>Камера жүктелуде...</p>
-              <small>(Кейін нақты камера қосылады: getUserMedia + Face API)</small>
+              <p>Белгі қойылды!</p>
+              <small>ТИГР!</small>
             </div>
             <button
               onClick={() => setShowCamera(false)}
@@ -87,7 +87,6 @@ const Otmetka = () => {
       {/* История посещений */}
       <div className="history-section">
         <h2>Соңғы белгілер</h2>
-        <Link to="/history">Тарихты көру</Link>
         <div className="table-container">
           <table className="history-table">
             <thead>

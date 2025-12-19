@@ -4,7 +4,7 @@ from ws.redis_pubsub import publish_attend
 
 cam_router = APIRouter(prefix="/camera")
 
-@cam_router.post("/mark")
+@cam_router.put("/mark")
 async def accept_req(data: dict):
     async with database.pool.acquire() as conn:
         lesson = await conn.fetchrow(
@@ -14,12 +14,12 @@ async def accept_req(data: dict):
         if not lesson:
             raise HTTPException(400, "lesson not found")
 
-        # INSERT или DO NOTHING
+        # INSERT или DO NOTHING 
         await conn.execute("""
-            INSERT INTO Attends (lesson_id, student_id, status, come_at, mark_source)
-            VALUES ($1, $2, $3, $4, 'system')
-            ON CONFLICT (lesson_id, student_id) DO NOTHING
-        """, lesson["id"], data["id"], data["status"], data["time"])
+            UPDATE Attends  SET status = $3, come_at = $4
+            WHERE lesson_id = $1 AND student_id = $2;        
+        """, lesson["id"], data["id"], data["status"], data["time"]) #  (lesson_id, student_id, status, come_at, mark_source)
+        #    VALUES ($1, $2, $3, $4, 'system')
 
         # Вебсокет
         event = {
