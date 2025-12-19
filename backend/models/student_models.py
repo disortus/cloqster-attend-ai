@@ -52,3 +52,10 @@ async def get_schedule_for_student(student_id: int) -> list:
             raise HTTPException(404, "Расписание отсутствует")
 
         return [dict(row) for row in schedule]
+
+async def get_lessons():
+    async with database.pool.acquire() as conn:
+        rows = conn.fetch("SELECT * FROM Lessons")
+        # if not rows:
+        #    raise HTTPException(400, "занятия не найдены")
+        return [dict(r) for r in rows] if rows else []

@@ -166,3 +166,21 @@ async def performance_report() -> dict:
 async def dashboard_overview() -> dict:
     from models.admin_models import dashboard_activity
     return await dashboard_activity()
+
+@admin_router.get("/attends")
+async def admin_get_all(
+    user=Depends(require_role("admin"))
+):
+    from models.admin_models import admin_get_attends
+    return await admin_get_attends()
+
+
+@admin_router.put("/attends/{attend_id}")
+async def admin_edit_attend(
+    attend_id: int,
+    new_status: str,
+    user=Depends(require_role("admin"))
+):
+    from models.admin_models import admin_update_attend
+    admin_id = user["id"]
+    return await admin_update_attend(admin_id, attend_id, new_status)

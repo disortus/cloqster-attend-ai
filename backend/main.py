@@ -1,6 +1,9 @@
 from contextlib import asynccontextmanager
 from routers import auth_route, curator_route, admin_route, teacher_route, student_route
 from databases.postgres import database
+from ws.redis_pubsub import init_redis
+from routers.camera_route import cam_router
+from ws.attends_ws import ws_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import subprocess
@@ -23,6 +26,13 @@ async def lifespan(app: FastAPI):
     await database.disconnect()
 
 app = FastAPI(lifespan=lifespan)
+
+@app.on_event("startup")
+async def startup():
+    await init_redis()
+
+app.include_router(cam_router)
+app.include_router(ws_router)
 app.include_router(auth_route.auth_router)
 app.include_router(curator_route.cur_router)
 app.include_router(admin_route.admin_router)

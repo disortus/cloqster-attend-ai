@@ -31,10 +31,10 @@ async def logout(response: Response) -> dict:
 async def get_current_user_info(current_user=Depends(utils.get_current_user)) -> UserOut:
     return current_user
 
-@auth_router.post("/recognize", response_model=dict)
-async def recognize(data: dict) -> dict:
-    await users_models.accept_req(data)
+# @auth_router.post("/recognize", response_model=dict)
+# async def recognize(data: dict) -> dict:
+#     await users_models.accept_req(data)
 
-@auth_router.put("/recognize", response_model=dict)
-async def updt_recognize(data: dict) -> dict:
-    await users_models.upd_req(data)
+# @auth_router.put("/recognize", response_model=dict)
+# async def updt_recognize(data: dict) -> dict:
+#     await users_models.upd_req(data)
