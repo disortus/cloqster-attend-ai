@@ -258,7 +258,7 @@ async def add_subject(data: Subject) -> dict:
             if not spec:
                 raise HTTPException(400, "Специальность не найдена")
             await conn.fetchrow(
-                "INSERT INTO Subjects (subj_name, scep_id) VALUES ($1, $2)",
+                "INSERT INTO Subjects (subj_name, spec_id) VALUES ($1, $2)",
                 data.subj_name, spec["id"]
             )
             return {"ok": True}
@@ -461,7 +461,7 @@ async def dashboard_activity() -> dict:
         
 async def get_users() -> dict:
     async with database.pool.acquire() as conn:
-        rows = conn.fetch("SELECT id, email, fullname, role FROM Users ORDER BY id")
+        rows = await conn.fetch("SELECT id, email, fullname, role FROM Users ORDER BY id")
         return [dict(r) for r in rows] if rows else []
 
 async def get_lessons():

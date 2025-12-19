@@ -7,4 +7,4 @@ router = Router()
 
 @router.message(CommandStart())
 async def start_bot(message: types.Message):
-    
+    ...
