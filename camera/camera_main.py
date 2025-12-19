@@ -13,7 +13,7 @@ from deepface import DeepFace
 BASE_DIR = Path(__file__).resolve().parent.parent
 IMGS_PATH = BASE_DIR / 'backend' / 'databases' / 'imgs'
 FASTAPI_URL = "http://localhost:5000/camera/mark"
-RTSP_URL = "rtsp://user:pass@172.20.10.2:554/stream1"
+RTSP_URL = "rtsp://disortus:new_pass125@172.20.10.2:554/stream"
 RECOGNITION_INTERVAL = 2.0
 DISTANCE_THRESHOLD = 0.4   # подстрой под свой ArcFace
 COOLDOWN_PER_PERSON = 5    # секунд
