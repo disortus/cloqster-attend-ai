@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from auth.utils import require_role, get_current_user
-from schemas.users_sch import UserName
+
 
 std_router = admin_router = APIRouter(
     prefix="/student",

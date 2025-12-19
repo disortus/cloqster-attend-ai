@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from auth.utils import require_role, get_current_user
-from ws.attends_ws import broadcast
+
 
 teach_router = APIRouter(
     prefix="/teacher",
