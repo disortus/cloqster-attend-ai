@@ -8,7 +8,7 @@ CloqsterAttendAI — это интеллектуальная система ав
 ###
 
 ###
-для запуска вам не обхлдимо установить redis
+для запуска вам необходимо установить redis
 на линуксе:
 sudo systemctl start redis
 запуск
@@ -18,3 +18,22 @@ sudo systemctl status redis
 на виндуйсе
 cd C:\Redis
 redis-server.exe redis.windows.conf
+###
+Скачивание python библиотек 
+pip install -r requirements.txt
+###
+
+###
+Запуск
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+###
+Front:
+
+cd frontend
+npm install
+npm start
+###
