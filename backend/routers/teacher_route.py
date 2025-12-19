@@ -4,8 +4,8 @@ from auth.utils import require_role, get_current_user
 
 teach_router = APIRouter(
     prefix="/teacher",
-    tags=["teacher"]
-    # dependencies=[Depends(require_role("teacher"))]
+    tags=["teacher"],
+    dependencies=[Depends(require_role("teacher"))]
 )
 
 @teach_router.get("/attends/{lesson_id}")
