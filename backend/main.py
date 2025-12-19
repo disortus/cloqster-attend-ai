@@ -26,9 +26,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-@app.on_event("startup")
-async def startup():
-    await init_redis()
+
+
 
 app.include_router(cam_router)
 app.include_router(ws_router)
