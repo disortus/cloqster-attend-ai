@@ -3,6 +3,8 @@ import LoginForm from "./components/LoginForm/LoginForm";
 import { Route, Routes, Navigate } from "react-router-dom";
 import AdminPanel from "./components/AdminPanel/AdminPanel";
 import CuratorPanel from "./components/CuratorPanel/CuratorPanel";
+import TeacherPanel from "./components/TeacherPanel/TeacherPanel";
+import StudentPanel from "./components/StudentPanel/StudentPanel";
 import HowItWorks from "./components/HowItsWork/HowItWorks";
 import Home from "./components/Home/Home";
 import Otmetka from "./components/otmetka/otmetka";
@@ -39,6 +41,10 @@ function App() {
                     <Route path="/admin" element={<AdminPanel />} />
 
                     <Route path="/curator" element={<CuratorPanel />} />
+
+                    <Route path="/teacher" element={<TeacherPanel />} />
+
+                    <Route path="/student" element={<StudentPanel />} />
 
                     {/* На любые неизвестные роуты */}
                     <Route path="*" element={<Navigate to="/" replace />} />

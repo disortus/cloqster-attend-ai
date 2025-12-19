@@ -60,7 +60,7 @@ async def teacher_update_attend(teacher_id: int, attend_id: int, new_status: str
 
 async def get_lessons():
     async with database.pool.acquire() as conn:
-        rows = conn.fetch("SELECT * FROM Lessons")
+        rows = await conn.fetch("SELECT * FROM Lessons")
         # if not rows:
         #    raise HTTPException(400, "занятия не найдены")
         return [dict(r) for r in rows] if rows else []

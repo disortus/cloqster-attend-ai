@@ -1,0 +1,157 @@
+/* ====== PANEL UI (единый стиль как админка) ====== */
+
+.panel-page {
+    min-height: calc(100vh - 70px);
+    background: #eef3ff;
+    padding: 28px 20px;
+}
+
+.panel-container {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.panel-head {
+    margin-bottom: 22px;
+}
+
+.panel-title {
+    font-size: 38px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.panel-subtitle {
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* cards */
+.panel-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.pcard {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(2,6,23,.08);
+    border-left: 4px solid #2563eb;
+}
+
+.pcard.green { border-left-color: #16a34a; }
+.pcard.red { border-left-color: #dc2626; }
+.pcard.orange { border-left-color: #ea580c; }
+
+.pcard-title {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.pcard-value {
+    margin-top: 6px;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+/* box */
+.pbox {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 16px 40px rgba(2,6,23,.08);
+    margin-bottom: 18px;
+}
+
+.pbox-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+/* table */
+.ptable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ptable th {
+    text-align: left;
+    font-size: 12px;
+    color: #475569;
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ptable td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ptable tr:hover {
+    background: #f8fafc;
+}
+
+/* status */
+.status {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status.present {
+    background: rgba(22,163,74,.12);
+    color: #16a34a;
+}
+
+.status.absent {
+    background: rgba(220,38,38,.12);
+    color: #dc2626;
+}
+
+.status.late {
+    background: rgba(234,88,12,.12);
+    color: #ea580c;
+}
+
+/* buttons */
+.pbtn {
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    margin-right: 6px;
+}
+
+.pbtn.green {
+    background: #16a34a;
+    color: #fff;
+}
+
+.pbtn.red {
+    background: #dc2626;
+    color: #fff;
+}
+
+.pbtn.orange {
+    background: #ea580c;
+    color: #fff;
+}
+
+.pbtn.blue {
+    background: #2563eb;
+    color: #fff;
+}
+
+input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #cbd5f5;
+    margin-right: 10px;
+}

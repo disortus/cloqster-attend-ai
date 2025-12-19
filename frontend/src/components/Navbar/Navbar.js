@@ -29,6 +29,16 @@ function Navbar() {
         navigate("/login");
     };
 
+    const goStudent = () => {
+        setOpen(false);
+        navigate("/student");
+    };
+
+    const goTeacher = () => {
+        setOpen(false);
+        navigate("/teacher");
+    };
+
     const goCurator = () => {
         setOpen(false);
         navigate("/curator");
@@ -51,7 +61,7 @@ function Navbar() {
             </ul>
 
             <ul>
-                <li><Dropdown /></li>
+                {/*<li><Dropdown /></li>*/}
 
                 <li ref={menuRef} style={{ position: "relative" }}>
                     {loadingAuth ? null : user ? (
@@ -128,7 +138,7 @@ function Navbar() {
 
                                     {user.role === "student" && (
                                         <button
-                                            onClick={goAdmin}
+                                            onClick={goStudent}
                                             style={{
                                                 width: "100%",
                                                 textAlign: "left",
@@ -147,7 +157,7 @@ function Navbar() {
 
                                     {user.role === "teacher" && (
                                         <button
-                                            onClick={goAdmin}
+                                            onClick={goTeacher}
                                             style={{
                                                 width: "100%",
                                                 textAlign: "left",
