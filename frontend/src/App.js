@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar/Navbar";
 import LoginForm from "./components/LoginForm/LoginForm";
 import { Route, Routes, Navigate } from "react-router-dom";
 import AdminPanel from "./components/AdminPanel/AdminPanel";
+import CuratorPanel from "./components/CuratorPanel/CuratorPanel";
 import HowItWorks from "./components/HowItsWork/HowItWorks";
 import Home from "./components/Home/Home";
 import Otmetka from "./components/otmetka/otmetka";
@@ -37,6 +38,7 @@ function App() {
 
                     <Route path="/admin" element={<AdminPanel />} />
 
+                    <Route path="/curator" element={<CuratorPanel />} />
 
                     {/* На любые неизвестные роуты */}
                     <Route path="*" element={<Navigate to="/" replace />} />
