@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 from routers import auth_route, curator_route, admin_route, teacher_route, student_route
 from databases.postgres import database
-from ws.redis_pubsub import init_redis
 from routers.camera_route import cam_router
 from ws.attends_ws import ws_router
 from fastapi import FastAPI
