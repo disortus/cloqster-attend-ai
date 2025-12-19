@@ -20,14 +20,14 @@ const AdminPanel = () => {
 
     const [activeTab, setActiveTab] = useState("dashboard");
 
-    // Дашборд
+   
     const [stats, setStats] = useState(null);
     const [trend, setTrend] = useState([]);
     const [breakdown, setBreakdown] = useState(null);
     const [activity, setActivity] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Пользователи
+    
     const [users, setUsers] = useState([]);
     const [newUser, setNewUser] = useState({
         fullname: "",
@@ -37,7 +37,7 @@ const AdminPanel = () => {
     });
     const [showAddUserForm, setShowAddUserForm] = useState(false);
 
-    // --- dashboard загрузка ---
+    
     useEffect(() => {
         let cancelled = false;
 
@@ -49,7 +49,7 @@ const AdminPanel = () => {
                     fetch(`${API}/admin/dashboard_stats`, { credentials: "include" }),
                     fetch(`${API}/admin/attendance_report`, { credentials: "include" }),
                     fetch(`${API}/admin/performance_report`, { credentials: "include" }),
-                    // у тебя реально endpoint с опечаткой:
+                    
                     fetch(`${API}/admin/dashbord_overview`, { credentials: "include" }),
                 ]);
 
@@ -65,8 +65,7 @@ const AdminPanel = () => {
 
                 if (cancelled) return;
 
-                // ✅ МАППИНГ stats под твой бэк
-                // бэк: today_present/today_absent/... groups_count/students_count
+               
                 const mappedStats = s
                     ? {
                         present: s.today_present ?? 0,
@@ -80,11 +79,10 @@ const AdminPanel = () => {
 
                 setStats(mappedStats);
 
-                // trend = список [{lesson_date, percent}]
+                
                 setTrend(Array.isArray(t) ? t : []);
 
-                // ✅ breakdown под твой бэк (он возвращает числа percent)
-                // { present: 80, absent: 10, late: 10 }
+                
                 setBreakdown({
                     present: b?.present ?? 0,
                     absent: b?.absent ?? 0,
@@ -92,7 +90,7 @@ const AdminPanel = () => {
                     excused: b?.excused ?? 0,
                 });
 
-                // ✅ activity под твой бэк (мы сделали dict {items: []})
+                
                 setActivity(Array.isArray(a?.items) ? a.items : []);
             } catch (e) {
                 console.error(e);
@@ -130,7 +128,7 @@ const AdminPanel = () => {
         };
     }, [navigate]);
 
-    // --- users: add ---
+    
     const handleAddUser = async (e) => {
         e.preventDefault();
 
@@ -143,7 +141,7 @@ const AdminPanel = () => {
                     email: newUser.email,
                     password: newUser.password,
                     role: newUser.role,
-                    fullname: newUser.fullname, // ✅ важно: fullname (как в schema)
+                    fullname: newUser.fullname, 
                 }),
             });
 
@@ -152,7 +150,7 @@ const AdminPanel = () => {
                 setNewUser({ fullname: "", email: "", password: "", role: "student" });
                 setShowAddUserForm(false);
 
-                // перезагрузить список
+                
                 const uRes = await fetch(`${API}/admin/users`, { credentials: "include" });
                 const uData = uRes.ok ? await uRes.json() : [];
                 setUsers(Array.isArray(uData) ? uData : []);
@@ -164,7 +162,7 @@ const AdminPanel = () => {
         }
     };
 
-    // --- users: delete (у тебя удаление по email!) ---
+    
     const handleDeleteUser = async (email) => {
         if (!window.confirm("Бұл пайдаланушыны өшіргіңіз келеді ме?")) return;
 
@@ -173,7 +171,7 @@ const AdminPanel = () => {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ email }), // ✅ важно: email
+                body: JSON.stringify({ email }), 
             });
 
             if (res.ok) {
